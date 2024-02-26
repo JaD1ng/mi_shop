@@ -16,8 +16,8 @@ var err error
 func init() {
 	//读取.ini里面的数据库配置
 
-	config, err := ini.Load("./conf/app.ini")
-	if err != nil {
+	config, err1 := ini.Load("./conf/app.ini")
+	if err1 != nil {
 		fmt.Printf("Fail to read file: %v", err)
 		os.Exit(1)
 	}
