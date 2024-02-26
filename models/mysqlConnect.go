@@ -1,13 +1,13 @@
+// Package models 连接mysql数据库
 package models
 
 //https://gorm.io/zh_CN/docs/connecting_to_the_database.html
 import (
 	"fmt"
-	"os"
-
 	"gopkg.in/ini.v1"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"os"
 )
 
 var DB *gorm.DB
