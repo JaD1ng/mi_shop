@@ -11,8 +11,7 @@ func AdminRoutersInit(r *gin.Engine) {
 	//middlewares.InitMiddleware中间件
 	adminRouters := r.Group("/admin", middlewares.InitMiddleware)
 	{
-		adminRouters.GET("/article", admin.ArticleController{}.Index)
-		adminRouters.GET("/article/add", admin.ArticleController{}.Add)
-		adminRouters.GET("/article/edit", admin.ArticleController{}.Edit)
+		adminRouters.GET("/article", admin.LoginController{}.Index)
+		adminRouters.GET("/article/add", admin.LoginController{}.DoLogin)
 	}
 }
