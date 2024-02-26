@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -36,7 +37,9 @@ func (con LoginController) DoLogin(c *gin.Context) {
 		}
 
 		session := sessions.Default(c)
-		session.Set("userinfoList", userinfoList)
+		// session.Set没法直接保存结构体对应的切片 把结构体转换成json字符串
+		userinfoSlice, _ := json.Marshal(userinfoList)
+		session.Set("userinfo", string(userinfoSlice))
 		session.Save()
 		con.success(c, "登录成功", "/admin")
 	} else {
