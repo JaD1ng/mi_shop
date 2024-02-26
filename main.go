@@ -1,13 +1,12 @@
 package main
 
 import (
-	"html/template"
-	"mi_shop/models"
-	"mi_shop/routers"
-
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"html/template"
+	"mi_shop/models"
+	"mi_shop/routers"
 )
 
 func main() {

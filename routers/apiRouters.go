@@ -1,9 +1,8 @@
 package routers
 
 import (
-	"mi_shop/controllers/api"
-
 	"github.com/gin-gonic/gin"
+	"mi_shop/controllers/api"
 )
 
 func ApiRoutersInit(r *gin.Engine) {

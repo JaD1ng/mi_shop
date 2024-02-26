@@ -1,9 +1,8 @@
 package admin
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type LoginController struct {

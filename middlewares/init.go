@@ -2,9 +2,8 @@ package middlewares
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/gin-gonic/gin"
+	"time"
 )
 
 func InitMiddleware(c *gin.Context) {
