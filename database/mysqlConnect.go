@@ -1,5 +1,5 @@
-// Package models 连接mysql数据库
-package models
+// Package database 连接mysql数据库
+package database
 
 //https://gorm.io/zh_CN/docs/connecting_to_the_database.html
 import (
@@ -15,8 +15,7 @@ var err error
 
 func init() {
 	//读取.ini里面的数据库配置
-
-	config, err1 := ini.Load("./conf/app.ini")
+	config, err1 := ini.Load("./config/app.ini")
 	if err1 != nil {
 		fmt.Printf("Fail to read file: %v", err)
 		os.Exit(1)

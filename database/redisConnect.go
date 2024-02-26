@@ -1,5 +1,5 @@
-// Package models 连接redis数据库
-package models
+// Package database 连接redis数据库
+package database
 
 import (
 	"context"

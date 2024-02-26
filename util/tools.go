@@ -1,6 +1,9 @@
-package models
+package util
 
 import (
+	"crypto/md5"
+	"fmt"
+	"io"
 	"time"
 )
 
@@ -35,4 +38,10 @@ func GetDate() string {
 func GetDay() string {
 	template := "20060102"
 	return time.Now().Format(template)
+}
+
+func Md5(pwd string) string {
+	h := md5.New()
+	io.WriteString(h, pwd)
+	return fmt.Sprintf("%x", h.Sum(nil))
 }

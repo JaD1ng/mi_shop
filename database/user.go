@@ -1,4 +1,4 @@
-package models
+package database
 
 type User struct {
 	Id       int
@@ -8,7 +8,7 @@ type User struct {
 	AddTime  int
 }
 
-//表示配置操作数据库的表名称
-func (User) TableName() string {
+// 表示配置操作数据库的表名称
+func (u *User) TableName() string {
 	return "user"
 }

@@ -5,8 +5,8 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"html/template"
-	"mi_shop/models"
 	"mi_shop/routers"
+	"mi_shop/util"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 	r := gin.Default()
 	//自定义模板函数  注意要把这个函数放在加载模板前
 	r.SetFuncMap(template.FuncMap{
-		"UnixToTime": models.UnixToTime,
+		"UnixToTime": util.UnixToTime,
 	})
 	//加载模板 放在配置路由前面
 	r.LoadHTMLGlob("templates/**/**/*")
