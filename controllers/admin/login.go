@@ -19,10 +19,10 @@ func (con LoginController) DoLogin(c *gin.Context) {
 	captchaId := c.PostForm("captchaId")
 	verifyValue := c.PostForm("verifyValue")
 
-	if flag := models.VerifyCaptcha(captchaId, verifyValue); flag == true {
-		c.String(http.StatusOK, "验证码验证成功")
+	if flag := models.VerifyCaptcha(captchaId, verifyValue); flag {
+		con.success(c, "登录成功", "/admin")
 	} else {
-		c.String(http.StatusOK, "验证码验证失败")
+		con.error(c, "验证码错误", "/admin/login")
 	}
 }
 
