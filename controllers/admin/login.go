@@ -11,7 +11,7 @@ type LoginController struct {
 }
 
 func (con LoginController) Index(c *gin.Context) {
-	c.String(http.StatusOK, "登录页面")
+	c.HTML(http.StatusOK, "admin/login/login.html", gin.H{})
 }
 
 func (con LoginController) DoLogin(c *gin.Context) {
