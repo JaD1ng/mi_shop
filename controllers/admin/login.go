@@ -54,3 +54,10 @@ func (con LoginController) Captcha(c *gin.Context) {
 		"captchaImage": b64s,
 	})
 }
+
+func (con LoginController) Logout(c *gin.Context) {
+	session := sessions.Default(c)
+	session.Delete("userinfo")
+	session.Save()
+	con.success(c, "退出成功", "/admin/login")
+}
