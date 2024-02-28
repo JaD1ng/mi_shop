@@ -41,7 +41,7 @@ func (con ManagerController) DoAdd(c *gin.Context) {
 	email := strings.Trim(c.PostForm("email"), " ")
 	mobile := strings.Trim(c.PostForm("mobile"), " ")
 	if len(username) < 2 || len(password) < 6 {
-		con.error(c, "用户名或密码长度不合法", "/admin/manager/add")
+		con.error(c, "用户名至少两位，密码至少六位", "/admin/manager/add")
 		return
 	}
 
@@ -72,9 +72,74 @@ func (con ManagerController) DoAdd(c *gin.Context) {
 }
 
 func (con ManagerController) Edit(c *gin.Context) {
-	c.HTML(http.StatusOK, "admin/manager/edit.html", gin.H{})
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		con.error(c, "参数错误", "/admin/manager")
+		return
+	}
+
+	// 获取id对应的管理员信息
+	manager := database.Manager{Id: id}
+	database.DB.Preload("Role").First(&manager)
+
+	// 获取角色列表
+	var roleList []database.Role
+	database.DB.Find(&roleList)
+
+	c.HTML(http.StatusOK, "admin/manager/edit.html", gin.H{
+		"manager":  manager,
+		"roleList": roleList,
+	})
+}
+
+func (con ManagerController) DoEdit(c *gin.Context) {
+	id, err := strconv.Atoi(c.PostForm("id"))
+	if err != nil {
+		con.error(c, "参数错误", "/admin/manager")
+		return
+	}
+
+	roleId, err := strconv.Atoi(c.PostForm("role_id"))
+	if err != nil {
+		con.error(c, "参数错误", "/admin/manager/edit?id="+strconv.Itoa(id))
+		return
+	}
+
+	// 获取id对应的管理员信息
+	username := strings.Trim(c.PostForm("username"), " ")
+	password := strings.Trim(c.PostForm("password"), " ")
+	email := strings.Trim(c.PostForm("email"), " ")
+	mobile := strings.Trim(c.PostForm("mobile"), " ")
+
+	manager := database.Manager{Id: id}
+	database.DB.First(&manager)
+	manager.Username = username
+	if len(password) > 0 {
+		if len(password) < 6 {
+			con.error(c, "密码至少六位", "/admin/manager/edit?id="+strconv.Itoa(id))
+			return
+		}
+		manager.Password = util.Md5(password)
+	}
+	manager.Email = email
+	manager.Mobile = mobile
+	manager.RoleId = roleId
+
+	err = database.DB.Save(&manager).Error
+	if err != nil {
+		con.error(c, "修改管理员失败", "/admin/manager/edit?id="+strconv.Itoa(id))
+		return
+	}
+	con.success(c, "修改管理员成功", "/admin/manager")
 }
 
 func (con ManagerController) Delete(c *gin.Context) {
-	c.String(http.StatusOK, "执行删除")
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		con.error(c, "参数错误", "/admin/manager")
+		return
+	}
+	manager := database.Manager{Id: id}
+	database.DB.Delete(&manager)
+	con.success(c, "删除管理员成功", "/admin/manager")
 }

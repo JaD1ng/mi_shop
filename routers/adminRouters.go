@@ -25,6 +25,7 @@ func AdminRoutersInit(r *gin.Engine) {
 		adminRouters.GET("/manager/add", admin.ManagerController{}.Add)
 		adminRouters.POST("/manager/doAdd", admin.ManagerController{}.DoAdd)
 		adminRouters.GET("/manager/edit", admin.ManagerController{}.Edit)
+		adminRouters.POST("/manager/doEdit", admin.ManagerController{}.DoEdit)
 		adminRouters.GET("/manager/delete", admin.ManagerController{}.Delete)
 
 		// 轮播图管理
