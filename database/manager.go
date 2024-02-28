@@ -10,6 +10,7 @@ type Manager struct {
 	RoleId   int
 	AddTime  int
 	IsSuper  int
+	Role     Role `gorm:"ForeignKey:RoleId;references:Id"`
 }
 
 // TableName 表示配置操作数据库的表名称

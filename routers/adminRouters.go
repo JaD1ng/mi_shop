@@ -23,6 +23,7 @@ func AdminRoutersInit(r *gin.Engine) {
 		// 管理员管理
 		adminRouters.GET("/manager", admin.ManagerController{}.Index)
 		adminRouters.GET("/manager/add", admin.ManagerController{}.Add)
+		adminRouters.POST("/manager/doAdd", admin.ManagerController{}.DoAdd)
 		adminRouters.GET("/manager/edit", admin.ManagerController{}.Edit)
 		adminRouters.GET("/manager/delete", admin.ManagerController{}.Delete)
 
@@ -32,7 +33,7 @@ func AdminRoutersInit(r *gin.Engine) {
 		adminRouters.GET("/focus/edit", admin.FocusController{}.Edit)
 		adminRouters.GET("/focus/delete", admin.FocusController{}.Delete)
 
-		// 角色管理
+		// 职位管理
 		adminRouters.GET("/role", admin.RoleController{}.Index)
 		adminRouters.GET("/role/add", admin.RoleController{}.Add)
 		adminRouters.POST("/role/doAdd", admin.RoleController{}.DoAdd)

@@ -28,7 +28,7 @@ func (con RoleController) DoAdd(c *gin.Context) {
 	description := strings.Trim(c.PostForm("description"), " ")
 	title := strings.Trim(c.PostForm("title"), " ")
 	if title == "" {
-		con.error(c, "角色名称不能为空", "/admin/role/add")
+		con.error(c, "职位名称不能为空", "/admin/role/add")
 		return
 	}
 
@@ -40,10 +40,10 @@ func (con RoleController) DoAdd(c *gin.Context) {
 	}
 
 	if err := database.DB.Create(&role).Error; err != nil {
-		con.error(c, "添加角色失败", "/admin/role/add")
+		con.error(c, "添加职位失败", "/admin/role/add")
 		return
 	}
-	con.success(c, "添加角色成功", "/admin/role")
+	con.success(c, "添加职位成功", "/admin/role")
 }
 
 func (con RoleController) Edit(c *gin.Context) {
@@ -64,7 +64,7 @@ func (con RoleController) DoEdit(c *gin.Context) {
 	description := strings.Trim(c.PostForm("description"), " ")
 	title := strings.Trim(c.PostForm("title"), " ")
 	if title == "" {
-		con.error(c, "角色名称不能为空", "/admin/role/edit")
+		con.error(c, "职位名称不能为空", "/admin/role/edit")
 		return
 	}
 	id, err := strconv.Atoi(c.PostForm("id"))
@@ -79,10 +79,10 @@ func (con RoleController) DoEdit(c *gin.Context) {
 	role.Description = description
 
 	if err = database.DB.Save(&role).Error; err != nil {
-		con.error(c, "修改角色失败", "/admin/role/edit?id="+strconv.Itoa(id))
+		con.error(c, "修改职位失败", "/admin/role/edit?id="+strconv.Itoa(id))
 		return
 	}
-	con.success(c, "修改角色成功", "/admin/role")
+	con.success(c, "修改职位成功", "/admin/role")
 }
 
 func (con RoleController) Delete(c *gin.Context) {
@@ -94,5 +94,5 @@ func (con RoleController) Delete(c *gin.Context) {
 
 	role := database.Role{Id: id}
 	database.DB.Delete(&role)
-	con.success(c, "删除角色成功", "/admin/role")
+	con.success(c, "删除职位成功", "/admin/role")
 }
