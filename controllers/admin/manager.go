@@ -82,7 +82,7 @@ func (con ManagerController) Edit(c *gin.Context) {
 	manager := database.Manager{Id: id}
 	database.DB.Preload("Role").First(&manager)
 
-	// 获取角色列表
+	// 获取职位列表
 	var roleList []database.Role
 	database.DB.Find(&roleList)
 
