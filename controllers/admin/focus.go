@@ -15,7 +15,11 @@ type FocusController struct {
 }
 
 func (con FocusController) Index(c *gin.Context) {
-	c.HTML(http.StatusOK, "admin/focus/index.html", gin.H{})
+	var focusList []database.Focus
+	database.DB.Find(&focusList)
+	c.HTML(http.StatusOK, "admin/focus/index.html", gin.H{
+		"focusList": focusList,
+	})
 }
 
 func (con FocusController) Add(c *gin.Context) {
@@ -44,7 +48,7 @@ func (con FocusController) DoAdd(c *gin.Context) {
 	}
 
 	// 上传文件
-	focusImgSrc, err := util.UploadImg(c, "focus_img")
+	focusImg, err := util.UploadImg(c, "focus_img")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -52,7 +56,7 @@ func (con FocusController) DoAdd(c *gin.Context) {
 	focus := database.Focus{
 		Title:     title,
 		FocusType: focusType,
-		FocusImg:  focusImgSrc,
+		FocusImg:  focusImg,
 		Link:      link,
 		Sort:      sort,
 		Status:    status,

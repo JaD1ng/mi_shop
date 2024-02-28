@@ -52,6 +52,7 @@ func Md5(pwd string) string {
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
+// UploadImg 根据日期上传图片
 func UploadImg(c *gin.Context, picName string) (string, error) {
 	// 1、获取上传的文件
 	file, err := c.FormFile(picName)
@@ -67,7 +68,6 @@ func UploadImg(c *gin.Context, picName string) (string, error) {
 		".gif":  true,
 		".jpeg": true,
 	}
-
 	if _, ok := allowExtMap[extName]; !ok {
 		return "", errors.New("文件后缀名不合法")
 	}
@@ -87,6 +87,9 @@ func UploadImg(c *gin.Context, picName string) (string, error) {
 
 	// 5、执行上传
 	dst := path.Join(dir, fileName)
-	c.SaveUploadedFile(file, dst)
+	err = c.SaveUploadedFile(file, dst)
+	if err != nil {
+		return "", err
+	}
 	return dst, nil
 }
