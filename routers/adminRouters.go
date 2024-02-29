@@ -7,7 +7,7 @@ import (
 )
 
 func AdminRoutersInit(r *gin.Engine) {
-	//middlewares.InitMiddleware中间件
+	// middlewares.InitMiddleware中间件
 	adminRouters := r.Group("/admin", middlewares.InitAdminAuth)
 	{
 		// 后台首页
@@ -31,7 +31,9 @@ func AdminRoutersInit(r *gin.Engine) {
 		// 轮播图管理
 		adminRouters.GET("/focus", admin.FocusController{}.Index)
 		adminRouters.GET("/focus/add", admin.FocusController{}.Add)
+		adminRouters.POST("/focus/doAdd", admin.FocusController{}.DoAdd)
 		adminRouters.GET("/focus/edit", admin.FocusController{}.Edit)
+		adminRouters.POST("/focus/doEdit", admin.FocusController{}.DoEdit)
 		adminRouters.GET("/focus/delete", admin.FocusController{}.Delete)
 
 		// 职位管理
