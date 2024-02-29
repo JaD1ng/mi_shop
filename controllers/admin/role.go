@@ -24,6 +24,7 @@ func (con RoleController) Index(c *gin.Context) {
 func (con RoleController) Add(c *gin.Context) {
 	c.HTML(http.StatusOK, "admin/role/add.html", gin.H{})
 }
+
 func (con RoleController) DoAdd(c *gin.Context) {
 	description := strings.Trim(c.PostForm("description"), " ")
 	title := strings.Trim(c.PostForm("title"), " ")
@@ -95,4 +96,65 @@ func (con RoleController) Delete(c *gin.Context) {
 	role := database.Role{Id: id}
 	database.DB.Delete(&role)
 	con.success(c, "删除职位成功", "/admin/role")
+}
+
+func (con RoleController) Auth(c *gin.Context) {
+	//1、获取角色id
+	roleId, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		con.error(c, "参数错误", "/admin/role")
+		return
+	}
+	//2、获取所有的权限
+	var accessList []database.Access
+	database.DB.Where("module_id=?", 0).Preload("AccessItem").Find(&accessList)
+
+	//3、获取当前角色拥有的权限 ，并把权限id放在一个map对象里面
+	var roleAccess []database.RoleAccess
+	database.DB.Where("role_id=?", roleId).Find(&roleAccess)
+	roleAccessMap := make(map[int]int)
+	for _, v := range roleAccess {
+		roleAccessMap[v.AccessId] = v.AccessId
+	}
+
+	//4、循环遍历所有的权限数据，判断当前权限的id是否在角色权限的Map对象中,如果是的话给当前数据加入checked属性
+	for i := 0; i < len(accessList); i++ {
+		if _, ok := roleAccessMap[accessList[i].Id]; ok {
+			accessList[i].Checked = true
+		}
+		for j := 0; j < len(accessList[i].AccessItem); j++ {
+			if _, ok := roleAccessMap[accessList[i].AccessItem[j].Id]; ok {
+				accessList[i].AccessItem[j].Checked = true
+			}
+		}
+	}
+
+	c.HTML(http.StatusOK, "admin/role/auth.html", gin.H{
+		"roleId":     roleId,
+		"accessList": accessList,
+	})
+}
+
+func (con RoleController) DoAuth(c *gin.Context) {
+	//获取角色id
+	roleId, err1 := strconv.Atoi(c.PostForm("role_id"))
+	if err1 != nil {
+		con.error(c, "参数错误", "/admin/role")
+		return
+	}
+	//获取权限id  切片
+	accessIds := c.PostFormArray("access_node[]")
+
+	//删除当前角色对应的权限
+	roleAccess := database.RoleAccess{}
+	database.DB.Where("role_id=?", roleId).Delete(&roleAccess)
+
+	//增加当前角色对应的权限
+	for _, v := range accessIds {
+		roleAccess.RoleId = roleId
+		accessId, _ := strconv.Atoi(v)
+		roleAccess.AccessId = accessId
+		database.DB.Create(&roleAccess)
+	}
+	con.success(c, "授权成功", "/admin/role")
 }
