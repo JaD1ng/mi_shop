@@ -3,12 +3,13 @@ package middlewares
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/ini.v1"
 	"mi_shop/database"
-	"os"
-	"strings"
 )
 
 // InitAdminAuth 判断是否登录并验证后台权限
@@ -58,7 +59,7 @@ func InitAdminAuth(c *gin.Context) {
 		access := database.Access{}
 		database.DB.Where("url = ?", urlPath).Find(&access)
 
-		//3、判断当前访问的url对应的权限id 是否在权限列表的id中
+		// 3、判断当前访问的url对应的权限id 是否在权限列表的id中
 		if _, ok := roleAccessMap[access.Id]; !ok {
 			c.String(200, "您没有权限")
 			c.Abort()

@@ -1,12 +1,13 @@
 package admin
 
 import (
-	"github.com/gin-gonic/gin"
-	"mi_shop/database"
-	"mi_shop/util"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"mi_shop/database"
+	"mi_shop/util"
 )
 
 type ManagerController struct {

@@ -1,20 +1,21 @@
 // Package database 连接mysql数据库
 package database
 
-//https://gorm.io/zh_CN/docs/connecting_to_the_database.html
+// https://gorm.io/zh_CN/docs/connecting_to_the_database.html
 import (
 	"fmt"
+	"os"
+
 	"gopkg.in/ini.v1"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"os"
 )
 
 var DB *gorm.DB
 var err error
 
 func init() {
-	//读取.ini里面的数据库配置
+	// 读取.ini里面的数据库配置
 	config, err1 := ini.Load("./config/app.ini")
 	if err1 != nil {
 		fmt.Printf("Fail to read file: %v", err)
@@ -30,8 +31,8 @@ func init() {
 	// dsn := "root:123456@tcp(192.168.0.6:3306)/gin?charset=utf8mb4&parseTime=True&loc=Local"
 	dsn := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&parseTime=True&loc=Local", user, password, ip, port, database)
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
-		QueryFields: true, //打印sql
-		//SkipDefaultTransaction: true, //禁用事务
+		QueryFields: true, // 打印sql
+		// SkipDefaultTransaction: true, //禁用事务
 	})
 	// DB.Debug()
 	if err != nil {

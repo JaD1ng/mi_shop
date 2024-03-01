@@ -3,11 +3,12 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"mi_shop/database"
 	"mi_shop/util"
-	"net/http"
 )
 
 type LoginController struct {

@@ -1,8 +1,9 @@
 package util
 
 import (
-	"github.com/mojocn/base64Captcha"
 	"image/color"
+
+	"github.com/mojocn/base64Captcha"
 )
 
 // var store = base64Captcha.DefaultMemStore
