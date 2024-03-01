@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"mi_shop/database"
 )
 
@@ -31,7 +32,9 @@ func (con MainController) Index(c *gin.Context) {
 
 	// 2、获取所有的权限
 	var accessList []database.Access
-	database.DB.Where("module_id=?", 0).Preload("AccessItem").Find(&accessList)
+	database.DB.Where("module_id=?", 0).Preload("AccessItem", func(db *gorm.DB) *gorm.DB {
+		return db.Order("access.sort DESC")
+	}).Order("sort DESC").Find(&accessList)
 
 	// 3、获取当前角色拥有的权限 ，并把权限id放在一个map对象里面
 	var roleAccess []database.RoleAccess
