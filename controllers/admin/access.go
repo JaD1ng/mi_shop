@@ -2,11 +2,12 @@ package admin
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"mi_shop/database"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"mi_shop/database"
 )
 
 type AccessController struct {
@@ -24,7 +25,7 @@ func (con AccessController) Index(c *gin.Context) {
 }
 
 func (con AccessController) Add(c *gin.Context) {
-	//获取顶级模块
+	// 获取顶级模块
 	var accessList []database.Access
 	database.DB.Where("module_id=?", 0).Find(&accessList)
 	c.HTML(http.StatusOK, "admin/access/add.html", gin.H{
@@ -72,7 +73,7 @@ func (con AccessController) DoAdd(c *gin.Context) {
 }
 
 func (con AccessController) Edit(c *gin.Context) {
-	//获取要修改的数据
+	// 获取要修改的数据
 	id, err := strconv.Atoi(c.Query("id"))
 	if err != nil {
 		con.error(c, "参数错误", "/admin/access")
@@ -80,7 +81,7 @@ func (con AccessController) Edit(c *gin.Context) {
 	access := database.Access{Id: id}
 	database.DB.Find(&access)
 
-	//获取顶级模块
+	// 获取顶级模块
 	var accessList []database.Access
 	database.DB.Where("module_id=?", 0).Find(&accessList)
 
@@ -102,7 +103,7 @@ func (con AccessController) DoEdit(c *gin.Context) {
 	description := c.PostForm("description")
 
 	if err1 != nil || err2 != nil || err3 != nil || err4 != nil || err5 != nil {
-		con.error(c, "传入参数错误", "/admin/access")
+		con.error(c, "参数错误", "/admin/access")
 		return
 	}
 	if moduleName == "" {
@@ -132,14 +133,14 @@ func (con AccessController) DoEdit(c *gin.Context) {
 func (con AccessController) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if err != nil {
-		con.error(c, "传入数据错误", "/admin/access")
+		con.error(c, "参数错误", "/admin/access")
 		return
 	}
 
-	//获取我们要删除的数据
+	// 获取我们要删除的数据
 	access := database.Access{Id: id}
 	database.DB.Find(&access)
-	if access.ModuleId == 0 { //顶级模块
+	if access.ModuleId == 0 { // 顶级模块
 		var accessList []database.Access
 		database.DB.Where("module_id = ?", access.Id).Find(&accessList)
 		if len(accessList) > 0 {

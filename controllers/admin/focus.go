@@ -72,14 +72,66 @@ func (con FocusController) DoAdd(c *gin.Context) {
 }
 
 func (con FocusController) Edit(c *gin.Context) {
-	c.HTML(http.StatusOK, "admin/focus/edit.html", gin.H{})
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		con.error(c, "参数错误", "/admin/focus")
+		return
+	}
+
+	focus := database.Focus{Id: id}
+	database.DB.Find(&focus)
+	c.HTML(http.StatusOK, "admin/focus/edit.html", gin.H{
+		"focus": focus,
+	})
 }
 
 func (con FocusController) DoEdit(c *gin.Context) {
-	c.String(http.StatusOK, "执行编辑")
+	id, err1 := strconv.Atoi(c.PostForm("id"))
+	title := c.PostForm("title")
+	focusType, err2 := strconv.Atoi(c.PostForm("focus_type"))
+	link := c.PostForm("link")
+	sort, err3 := strconv.Atoi(c.PostForm("sort"))
+	status, err4 := strconv.Atoi(c.PostForm("status"))
 
+	if err1 != nil || err2 != nil || err4 != nil {
+		con.error(c, "非法请求", "/admin/focus")
+	}
+	if err3 != nil {
+		con.error(c, "请输入正确的排序值", "/admin/focus/edit?id="+strconv.Itoa(id))
+	}
+
+	// 上传文件
+	focusImg, _ := util.UploadImg(c, "focus_img")
+
+	focus := database.Focus{Id: id}
+	database.DB.Find(&focus)
+	focus.Title = title
+	focus.FocusType = focusType
+	focus.Link = link
+	focus.Sort = sort
+	focus.Status = status
+	if focusImg != "" {
+		focus.FocusImg = focusImg
+	}
+
+	err := database.DB.Save(&focus).Error
+	if err != nil {
+		con.error(c, "修改数据失败请重新尝试", "/admin/focus/edit?id="+strconv.Itoa(id))
+		return
+	}
+	con.success(c, "增加轮播图成功", "/admin/focus")
 }
 
 func (con FocusController) Delete(c *gin.Context) {
-	c.String(http.StatusOK, "执行删除")
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		con.error(c, "参数错误", "/admin/focus")
+		return
+	}
+
+	focus := database.Focus{Id: id}
+	database.DB.Delete(&focus)
+	// 根据自己的需要 要不要删除图片
+	// os.Remove("static/upload/20210915/1631694117.jpg")
+	con.success(c, "删除数据成功", "/admin/focus")
 }
