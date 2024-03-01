@@ -28,7 +28,6 @@
                         <td>{{$value.Description}}</td>
 
                         <td class="text-center">
-
                             {{if eq $value.Status 1}}
                             <img src="/static/admin/images/yes.gif" class="chStatus" data-id="{{$value.Id}}"
                                  data-table="goods_type" data-field="status"/>
@@ -39,6 +38,7 @@
                         </td>
 
                         <td class="text-center">
+                            <a href="/admin/goodsTypeAttribute?id={{$value.Id}}">类型属性</a> 　
                             <a href="/admin/goodsType/edit?id={{$value.Id}}">修改</a> 　
                             <a class="delete"
                                href="/admin/goodsType/delete?id={{$value.Id}}">删除</a>

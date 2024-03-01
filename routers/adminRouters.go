@@ -71,5 +71,13 @@ func AdminRoutersInit(r *gin.Engine) {
 		adminRouters.GET("/goodsType/edit", admin.GoodsTypeController{}.Edit)
 		adminRouters.POST("/goodsType/doEdit", admin.GoodsTypeController{}.DoEdit)
 		adminRouters.GET("/goodsType/delete", admin.GoodsTypeController{}.Delete)
+
+		// 商品类型属性管理
+		adminRouters.GET("/goodsTypeAttribute", admin.GoodsTypeAttributeController{}.Index)
+		adminRouters.GET("/goodsTypeAttribute/add", admin.GoodsTypeAttributeController{}.Add)
+		adminRouters.POST("/goodsTypeAttribute/doAdd", admin.GoodsTypeAttributeController{}.DoAdd)
+		adminRouters.GET("/goodsTypeAttribute/edit", admin.GoodsTypeAttributeController{}.Edit)
+		adminRouters.POST("/goodsTypeAttribute/doEdit", admin.GoodsTypeAttributeController{}.DoEdit)
+		adminRouters.GET("/goodsTypeAttribute/delete", admin.GoodsTypeAttributeController{}.Delete)
 	}
 }
