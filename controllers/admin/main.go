@@ -3,6 +3,7 @@ package admin
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -36,7 +37,7 @@ func (con MainController) Index(c *gin.Context) {
 		return db.Order("access.sort DESC")
 	}).Order("sort DESC").Find(&accessList)
 
-	// 3、获取当前角色拥有的权限 ，并把权限id放在一个map对象里面
+	// 3、获取当前职位拥有的权限 ，并把权限id放在一个map对象里面
 	var roleAccess []database.RoleAccess
 	database.DB.Where("role_id=?", userinfoStruct[0].RoleId).Find(&roleAccess)
 	roleAccessMap := make(map[int]int)
@@ -44,7 +45,7 @@ func (con MainController) Index(c *gin.Context) {
 		roleAccessMap[v.AccessId] = v.AccessId
 	}
 
-	// 4、循环遍历所有的权限数据，判断当前权限的id是否在角色权限的Map对象中,如果是的话给当前数据加入checked属性
+	// 4、循环遍历所有的权限数据，判断当前权限的id是否在职位权限的Map对象中,如果是的话给当前数据加入checked属性
 	for i := 0; i < len(accessList); i++ {
 		if _, ok := roleAccessMap[accessList[i].Id]; ok {
 			accessList[i].Checked = true
@@ -65,4 +66,61 @@ func (con MainController) Index(c *gin.Context) {
 
 func (con MainController) Welcome(c *gin.Context) {
 	c.HTML(http.StatusOK, "admin/main/welcome.html", gin.H{})
+}
+
+// ChangeStatus 修改状态
+func (con MainController) ChangeStatus(c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "参数错误",
+		})
+		return
+	}
+
+	table := c.Query("table")
+	field := c.Query("field")
+
+	err = database.DB.Exec("update "+table+" set "+field+"=ABS("+field+"-1) where id=?", id).Error
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "修改失败，请重试",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "修改成功",
+	})
+}
+
+func (con MainController) ChangeNum(c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "参数错误",
+		})
+		return
+	}
+
+	table := c.Query("table")
+	field := c.Query("field")
+	num := c.Query("num")
+
+	err = database.DB.Exec("update "+table+" set "+field+"="+num+" where id=?", id).Error
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "修改数据失败",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "修改成功",
+	})
 }

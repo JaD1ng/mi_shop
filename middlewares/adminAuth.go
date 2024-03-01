@@ -45,7 +45,7 @@ func InitAdminAuth(c *gin.Context) {
 	urlPath := strings.Replace(url, "/admin/", "", 1)
 
 	if userinfoStruct[0].IsSuper == 0 && !excludeAuthPath("/"+urlPath) {
-		// 1、根据角色获取当前角色的权限列表,然后把权限id放在一个map类型的对象里面
+		// 1、根据职位获取当前职位的权限列表,然后把权限id放在一个map类型的对象里面
 		var roleAccess []database.RoleAccess
 		database.DB.Where("role_id=?", userinfoStruct[0].RoleId).Find(&roleAccess)
 		roleAccessMap := make(map[int]int)
@@ -53,7 +53,7 @@ func InitAdminAuth(c *gin.Context) {
 			roleAccessMap[v.AccessId] = v.AccessId
 		}
 
-		// 2、获取当前访问的url对应的权限id 判断权限id是否在角色对应的权限
+		// 2、获取当前访问的url对应的权限id 判断权限id是否在职位对应的权限
 		// url   /admin/manager
 		access := database.Access{}
 		database.DB.Where("url = ?", urlPath).Find(&access)

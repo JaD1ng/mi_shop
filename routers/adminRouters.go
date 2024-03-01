@@ -13,6 +13,8 @@ func AdminRoutersInit(r *gin.Engine) {
 		// 后台首页
 		adminRouters.GET("/", admin.MainController{}.Index)
 		adminRouters.GET("/welcome", admin.MainController{}.Welcome)
+		adminRouters.GET("/changeStatus", admin.MainController{}.ChangeStatus)
+		adminRouters.GET("/changeNum", admin.MainController{}.ChangeNum)
 
 		// 管理员登录
 		adminRouters.GET("/login", admin.LoginController{}.Index)
