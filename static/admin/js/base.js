@@ -1,5 +1,8 @@
 $(function () {
     baseApp.init();
+    $(window).resize(function () {
+        baseApp.resizeIframe();
+    })
 })
 
 var baseApp = {
@@ -11,8 +14,9 @@ var baseApp = {
         this.changeNum()
     },
 
-    // 侧边栏的显示和隐藏
+    // 侧边栏的显示与隐藏
     initAside: function () {
+        $('.aside>li:nth-child(1) ul,.aside>li:nth-child(2) ul').hide()
         $('.aside h4').click(function () {
             $(this).siblings('ul').slideToggle();
         })
@@ -31,7 +35,7 @@ var baseApp = {
         })
     },
 
-    // 改变状态
+    // 修改状态
     changeStatus: function () {
         $(".chStatus").click(function () {
             var id = $(this).attr("data-id")
@@ -50,7 +54,7 @@ var baseApp = {
         })
     },
 
-    // 改变数量
+    // 修改数量
     changeNum: function () {
         $(".chSpanNum").click(function () {
             // 1、获取el 以及el里面的属性值
