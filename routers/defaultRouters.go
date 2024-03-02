@@ -9,6 +9,9 @@ func DefaultRoutersInit(r *gin.Engine) {
 	defaultRouters := r.Group("/")
 	{
 		defaultRouters.GET("/", home.DefaultController{}.Index)
-		defaultRouters.GET("/news", home.DefaultController{}.News)
+		defaultRouters.GET("/thumbnail1", home.DefaultController{}.Thumbnail1)
+		defaultRouters.GET("/thumbnail2", home.DefaultController{}.Thumbnail2)
+		defaultRouters.GET("/qrcode1", home.DefaultController{}.Qrcode1)
+		defaultRouters.GET("/qrcode2", home.DefaultController{}.Qrcode2)
 	}
 }
