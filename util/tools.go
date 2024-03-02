@@ -97,3 +97,9 @@ func UploadImg(c *gin.Context, picName string) (string, error) {
 	}
 	return dst, nil
 }
+
+// Float 字符串转换成float64
+func Float(str string) (n float64, err error) {
+	n, err = strconv.ParseFloat(str, 64)
+	return
+}

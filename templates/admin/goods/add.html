@@ -43,7 +43,7 @@
                                     </li>
                                     <li><span>所属分类:</span>
 
-                                        <select name="cid" id="cid">
+                                        <select name="cate_id" id="cid">
                                             {{range $key,$value := .goodsCateList}}
                                             <option value="{{$value.Id}}">{{$value.Title}}</option>
                                             {{range $k,$v := $value.GoodsCateItems}}
@@ -52,7 +52,7 @@
                                             {{end}}
                                         </select>
                                     </li>
-                                    <li><span> 商品图片:</span> <input type="file" name="pic"/></li>
+                                    <li><span> 商品图片:</span> <input type="file" name="goods_img"/></li>
                                     <li><span>商品价格:</span> <input type="text" name="price"/></li>
                                     <li><span>商品原价:</span> <input type="text" name="market_price"/></li>
 
@@ -67,10 +67,11 @@
                                         <input type="checkbox" value="1" name="is_new"/> 新品
                                     </li>
                                 </ul>
+
                             </div>
 
                             <div role="tabpanel" class="tab-pane" id="detail">
-                                <textarea name="content" id="content" cols="100" rows="8"></textarea>
+                                <textarea name="goods_content" id="content" cols="100" rows="8"></textarea>
                             </div>
 
                             <div role="tabpanel" class="tab-pane" id="mix">
@@ -105,7 +106,16 @@
 
                                     <li><span>更多属性:</span>
                                         <input type="text" name="goods_attr" class="goods_attr"/> <i> 格式: 颜色:红色,白色,黄色
-                                            | 尺寸:41,42,43</i>
+                                            |
+                                            尺寸:41,42,43</i>
+                                    </li>
+
+                                    <li><span>SEO关键词:</span>
+                                        <input type="text" name="goods_keywords"/>
+                                    </li>
+
+                                    <li><span>SEO描述:</span>
+                                        <textarea name="goods_desc" id="goods_desc" cols="30" rows="10"></textarea>
                                     </li>
 
                                 </ul>
@@ -113,24 +123,25 @@
                             <div role="tabpanel" class="tab-pane" id="attribute">
 
                                 <ul class="form_input">
+
                                     <li><span>商品类型:　</span>
                                         <select name="goods_type_id" id="goods_type_id">
                                             <option value="0">--请选择商品类型--</option>
-
                                             {{range $key,$value := .goodsTypeList}}
                                             <option value="{{$value.Id}}">{{$value.Title}}</option>
                                             {{end}}
                                         </select>
                                     </li>
+
                                 </ul>
-
-                                <ul class="form_input" id="goods_type_attribute"></ul>
-
+                                <ul class="form_input" id="goods_type_attribute">
+                                </ul>
                             </div>
                             <div role="tabpanel" class="tab-pane" id="photo">
                                 <div id="photoUploader"></div>
                                 <div id="photoList"></div>
                             </div>
+
                         </div>
 
                         <br/>
