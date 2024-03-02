@@ -37,6 +37,17 @@ func (con GoodsController) Add(c *gin.Context) {
 	})
 }
 
+func (con GoodsController) DoAdd(c *gin.Context) {
+	attrIdList := c.PostFormArray("attr_id_list")
+	attrValueList := c.PostFormArray("attr_value_list")
+	goodsImageList := c.PostFormArray("goods_image_list")
+	c.JSON(200, gin.H{
+		"attrIdList":     attrIdList,
+		"attrValueList":  attrValueList,
+		"goodsImageList": goodsImageList,
+	})
+}
+
 // GoodsTypeAttribute 获取并返回商品类型属性
 func (con GoodsController) GoodsTypeAttribute(c *gin.Context) {
 	cateId, err1 := strconv.Atoi(c.Query("cateId"))

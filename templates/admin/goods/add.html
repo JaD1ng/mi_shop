@@ -1,14 +1,15 @@
 {{ define "admin/goods/add.html" }}
 {{ template "admin/public/page_header.html" .}}
 
-<!-- Include Editor style. -->
-<link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet"
-      type="text/css"/>
-<!-- Include Editor JS files. -->
-<script type="text/javascript"
-        src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js"></script>
-<!-- 语言包 -->
-<script type="text/javascript" src="/static/admin/js/zh_cn.js"></script>
+<!-- 富文本编辑器 -->
+<link href="/static/node_modules/froala-editor/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="/static/node_modules/froala-editor/js/froala_editor.pkgd.min.js"></script>
+<script type="text/javascript" src="/static/node_modules/froala-editor/js/zh_cn.js"></script>
+<!-- 上传图片的js css -->
+<link rel="stylesheet" type="text/css" href="/static/diyUpload/css/webuploader.css">
+<link rel="stylesheet" type="text/css" href="/static/diyUpload/css/diyUpload.css">
+<script type="text/javascript" src="/static/diyUpload/js/webuploader.html5only.min.js"></script>
+<script type="text/javascript" src="/static/diyUpload/js/diyUpload.js"></script>
 
 <div class="container-fluid">
     <div class="row">
@@ -66,7 +67,6 @@
                                         <input type="checkbox" value="1" name="is_new"/> 新品
                                     </li>
                                 </ul>
-
                             </div>
 
                             <div role="tabpanel" class="tab-pane" id="detail">
@@ -78,6 +78,7 @@
                                 <ul class="form_input">
 
                                     <li><span>商品颜色:</span>
+
                                         {{range $key,$value := .goodsColorList}}
                                         <input type="checkbox" value="{{$value.Id}}" name="goods_color"
                                                id="color_{{$value.Id}}"/>
@@ -127,9 +128,13 @@
 
                             </div>
                             <div role="tabpanel" class="tab-pane" id="photo">
-                                商品相册
+                                <div id="photoUploader"></div>
+                                <div id="photoList"></div>
                             </div>
                         </div>
+
+                        <br/>
+                        <button type="submit" class="btn btn-primary">提交</button>
                     </form>
                 </div>
             </div>
@@ -176,6 +181,22 @@
                 }
             })
         })
+    })
+
+    //批量上传图片
+    $(function () {
+        $('#photoUploader').diyUpload({
+            url: '/admin/goods/imageUpload',
+            success: function (response) {
+                // console.info( data );
+                var photoStr = '<input type="hidden" name="goods_image_list" value=' + response.link + ' />';
+                $("#photoList").append(photoStr)
+            },
+            error: function (err) {
+                console.info(err);
+            }
+        });
+
     })
 </script>
 
