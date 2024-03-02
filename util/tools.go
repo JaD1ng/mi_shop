@@ -78,7 +78,6 @@ func UploadImg(c *gin.Context, picName string) (string, error) {
 
 	err = os.MkdirAll(dir, 0666)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 
