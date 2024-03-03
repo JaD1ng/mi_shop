@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -18,7 +19,12 @@ type GoodsController struct {
 }
 
 func (con GoodsController) Index(c *gin.Context) {
-	c.HTML(http.StatusOK, "admin/goods/index.html", gin.H{})
+	var goodsList []database.Goods
+	database.DB.Find(&goodsList)
+
+	c.HTML(http.StatusOK, "admin/goods/index.html", gin.H{
+		"goodsList": goodsList,
+	})
 }
 
 func (con GoodsController) Add(c *gin.Context) {
@@ -164,6 +170,86 @@ func (con GoodsController) DoAdd(c *gin.Context) {
 	}()
 	wg.Wait()
 	con.success(c, "增加商品成功", "/admin/goods")
+}
+
+func (con GoodsController) Edit(c *gin.Context) {
+	// 1、获取要修改的商品数据
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		con.error(c, "参数错误", "/admin/goods")
+	}
+	goods := database.Goods{Id: id}
+	database.DB.Find(&goods)
+
+	// 2、获取商品分类
+	var goodsCateList []database.GoodsCate
+	database.DB.Where("pid=0").Preload("GoodsCateItems").Find(&goodsCateList)
+
+	// 3、获取所有颜色 以及选中的颜色
+	goodsColorSlice := strings.Split(goods.GoodsColor, ",")
+	goodsColorMap := make(map[string]string)
+	for _, v := range goodsColorSlice {
+		goodsColorMap[v] = v
+	}
+
+	var goodsColorList []database.GoodsColor
+	database.DB.Find(&goodsColorList)
+	for i := 0; i < len(goodsColorList); i++ {
+		if _, ok := goodsColorMap[strconv.Itoa(goodsColorList[i].Id)]; ok {
+			goodsColorList[i].Checked = true
+		}
+	}
+
+	// 4、商品的图库信息
+	var goodsImageList []database.GoodsImage
+	database.DB.Where("goods_id=?", goods.Id).Find(&goodsImageList)
+
+	// 5、获取商品类型
+	var goodsTypeList []database.GoodsType
+	database.DB.Find(&goodsTypeList)
+
+	// 6、获取规格信息
+	var goodsAttr []database.GoodsAttr
+	database.DB.Where("goods_id=?", goods.Id).Find(&goodsAttr)
+	goodsAttrStr := ""
+
+	for _, v := range goodsAttr {
+		if v.AttributeType == 1 {
+			goodsAttrStr += fmt.Sprintf(`<li><span>%v: </span> <input type="hidden" name="attr_id_list" value="%v" />   <input type="text" name="attr_value_list" value="%v" /></li>`, v.AttributeTitle, v.AttributeId, v.AttributeValue)
+		} else if v.AttributeType == 2 {
+			goodsAttrStr += fmt.Sprintf(`<li><span>%v: 　</span><input type="hidden" name="attr_id_list" value="%v" />  <textarea cols="50" rows="3" name="attr_value_list">%v</textarea></li>`, v.AttributeTitle, v.AttributeId, v.AttributeValue)
+		} else {
+			// 获取当前类型对应的值
+			goodsTypeArttribute := database.GoodsTypeAttribute{Id: v.AttributeId}
+			database.DB.Find(&goodsTypeArttribute)
+			attrValueSlice := strings.Split(goodsTypeArttribute.AttrValue, "\n")
+
+			goodsAttrStr += fmt.Sprintf(`<li><span>%v: 　</span>  <input type="hidden" name="attr_id_list" value="%v" /> `, v.AttributeTitle, v.AttributeId)
+			goodsAttrStr += fmt.Sprintf(`<select name="attr_value_list">`)
+			for i := 0; i < len(attrValueSlice); i++ {
+				if attrValueSlice[i] == v.AttributeValue {
+					goodsAttrStr += fmt.Sprintf(`<option value="%v" selected >%v</option>`, attrValueSlice[i], attrValueSlice[i])
+				} else {
+					goodsAttrStr += fmt.Sprintf(`<option value="%v">%v</option>`, attrValueSlice[i], attrValueSlice[i])
+				}
+			}
+			goodsAttrStr += fmt.Sprintf(`</select>`)
+			goodsAttrStr += fmt.Sprintf(`</li>`)
+		}
+	}
+
+	c.HTML(http.StatusOK, "admin/goods/edit.html", gin.H{
+		"goods":          goods,
+		"goodsCateList":  goodsCateList,
+		"goodsColorList": goodsColorList,
+		"goodsTypeList":  goodsTypeList,
+		"goodsAttrStr":   goodsAttrStr,
+		"goodsImageList": goodsImageList,
+	})
+}
+
+func (con GoodsController) DoEdit(context *gin.Context) {
+
 }
 
 // GoodsTypeAttribute 获取并返回商品类型属性

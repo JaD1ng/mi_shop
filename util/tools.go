@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"errors"
 	"fmt"
+	"html/template"
 	"io"
 	"os"
 	"path"
@@ -102,4 +103,8 @@ func UploadImg(c *gin.Context, picName string) (string, error) {
 func Float(str string) (n float64, err error) {
 	n, err = strconv.ParseFloat(str, 64)
 	return
+}
+
+func Str2Html(str string) template.HTML {
+	return template.HTML(str)
 }
