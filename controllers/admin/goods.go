@@ -2,6 +2,7 @@ package admin
 
 import (
 	"fmt"
+	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -19,11 +20,22 @@ type GoodsController struct {
 }
 
 func (con GoodsController) Index(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize := 5
 	var goodsList []database.Goods
 	database.DB.Find(&goodsList)
 
+	// 分页
+	database.DB.Limit(pageSize).Offset((page - 1) * pageSize).Find(&goodsList)
+
+	// 获取总记录数
+	var count int64
+	database.DB.Table("goods").Count(&count)
+
 	c.HTML(http.StatusOK, "admin/goods/index.html", gin.H{
-		"goodsList": goodsList,
+		"goodsList":  goodsList,
+		"totalPages": math.Ceil(float64(count) / float64(pageSize)),
+		"page":       page,
 	})
 }
 
