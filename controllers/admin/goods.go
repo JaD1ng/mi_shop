@@ -248,8 +248,130 @@ func (con GoodsController) Edit(c *gin.Context) {
 	})
 }
 
-func (con GoodsController) DoEdit(context *gin.Context) {
+func (con GoodsController) DoEdit(c *gin.Context) {
+	// 1、获取表单提交过来的数据
+	id, err := strconv.Atoi(c.PostForm("id"))
+	if err != nil {
+		con.error(c, "参数错误", "/admin/goods")
+		return
+	}
+	title := c.PostForm("title")
+	subTitle := c.PostForm("sub_title")
+	goodsSn := c.PostForm("goods_sn")
+	cateId, _ := strconv.Atoi(c.PostForm("cate_id"))
+	goodsNumber, _ := strconv.Atoi(c.PostForm("goods_number"))
+	marketPrice, _ := util.Float(c.PostForm("market_price")) // 注意小数点
+	price, _ := util.Float(c.PostForm("price"))
+	relationGoods := c.PostForm("relation_goods")
+	goodsAttr := c.PostForm("goods_attr")
+	goodsVersion := c.PostForm("goods_version")
+	goodsGift := c.PostForm("goods_gift")
+	goodsFitting := c.PostForm("goods_fitting")
+	goodsColorArr := c.PostFormArray("goods_color") // 获取的是切片
+	goodsKeywords := c.PostForm("goods_keywords")
+	goodsDesc := c.PostForm("goods_desc")
+	goodsContent := c.PostForm("goods_content")
+	isDelete, _ := strconv.Atoi(c.PostForm("is_delete"))
+	isHot, _ := strconv.Atoi(c.PostForm("is_hot"))
+	isBest, _ := strconv.Atoi(c.PostForm("is_best"))
+	isNew, _ := strconv.Atoi(c.PostForm("is_new"))
+	goodsTypeId, _ := strconv.Atoi(c.PostForm("goods_type_id"))
+	sort, _ := strconv.Atoi(c.PostForm("sort"))
+	status, _ := strconv.Atoi(c.PostForm("status"))
 
+	// 2、获取颜色信息 把颜色转化成字符串
+	goodsColorStr := strings.Join(goodsColorArr, ",")
+
+	// 3、修改数据
+	goods := database.Goods{Id: id}
+	database.DB.Find(&goods)
+	goods.Title = title
+	goods.SubTitle = subTitle
+	goods.GoodsSn = goodsSn
+	goods.CateId = cateId
+	goods.GoodsNumber = goodsNumber
+	goods.MarketPrice = marketPrice
+	goods.Price = price
+	goods.RelationGoods = relationGoods
+	goods.GoodsAttr = goodsAttr
+	goods.GoodsVersion = goodsVersion
+	goods.GoodsGift = goodsGift
+	goods.GoodsFitting = goodsFitting
+	goods.GoodsKeywords = goodsKeywords
+	goods.GoodsDesc = goodsDesc
+	goods.GoodsContent = goodsContent
+	goods.IsDelete = isDelete
+	goods.IsHot = isHot
+	goods.IsBest = isBest
+	goods.IsNew = isNew
+	goods.GoodsTypeId = goodsTypeId
+	goods.Sort = sort
+	goods.Status = status
+	goods.GoodsColor = goodsColorStr
+
+	// 4、上传图片   生成缩略图
+	goodsImg, err := util.UploadImg(c, "goods_img")
+	if err == nil && len(goodsImg) > 0 {
+		goods.GoodsImg = goodsImg
+	}
+
+	err = database.DB.Save(&goods).Error
+	if err != nil {
+		con.error(c, "修改失败", "/admin/goods/edit?id="+strconv.Itoa(id))
+		return
+	}
+
+	// 5、修改图库 增加图库信息
+	wg.Add(1)
+	go func() {
+		goodsImageList := c.PostFormArray("goods_image_list")
+		for _, v := range goodsImageList {
+			goodsImgObj := database.GoodsImage{
+				GoodsId: goods.Id,
+				ImgUrl:  v,
+				Sort:    10,
+				Status:  1,
+				AddTime: int(util.GetUnix()),
+			}
+			database.DB.Create(&goodsImgObj)
+		}
+		wg.Done()
+	}()
+
+	// 6、修改规格包装  1、删除当前商品下面的规格包装   2、重新执行增加
+	// 6.1删除当前商品下面的规格包装
+	goodsAttrObj := database.GoodsAttr{}
+	database.DB.Where("goods_id=?", goods.Id).Delete(&goodsAttrObj)
+	// 6.2、重新执行增加
+	wg.Add(1)
+	go func() {
+		attrIdList := c.PostFormArray("attr_id_list")
+		attrValueList := c.PostFormArray("attr_value_list")
+		for i := 0; i < len(attrIdList); i++ {
+			goodsTypeAttributeId, attributeIdErr := strconv.Atoi(attrIdList[i])
+			if attributeIdErr == nil {
+				// 获取商品类型属性的数据
+				goodsTypeAttributeObj := database.GoodsTypeAttribute{Id: goodsTypeAttributeId}
+				database.DB.Find(&goodsTypeAttributeObj)
+				// 给商品属性里面增加数据  规格包装
+				goodsAttrObj := database.GoodsAttr{
+					GoodsId:         goods.Id,
+					AttributeTitle:  goodsTypeAttributeObj.Title,
+					AttributeType:   goodsTypeAttributeObj.AttrType,
+					AttributeId:     goodsTypeAttributeObj.Id,
+					AttributeCateId: goodsTypeAttributeObj.CateId,
+					AttributeValue:  attrValueList[i],
+					Status:          1,
+					Sort:            10,
+					AddTime:         int(util.GetUnix()),
+				}
+				database.DB.Create(&goodsAttrObj)
+			}
+		}
+		wg.Done()
+	}()
+	wg.Wait()
+	con.success(c, "修改数据成功", "/admin/goods")
 }
 
 // GoodsTypeAttribute 获取并返回商品类型属性
