@@ -13,6 +13,8 @@ import (
 	"mi_shop/util"
 )
 
+const pageSize = 5
+
 var wg sync.WaitGroup
 
 type GoodsController struct {
@@ -20,22 +22,36 @@ type GoodsController struct {
 }
 
 func (con GoodsController) Index(c *gin.Context) {
+	// 当前页数
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-	pageSize := 5
+	// 条件
+	where := "is_delete=0"
+
+	// 获取keyword
+	keyword := c.Query("keyword")
+	if len(keyword) > 0 {
+		where += " AND title like \"%" + keyword + "%\""
+	}
+	// is_delete=0 AND title like "%小米%"
+
 	var goodsList []database.Goods
-	database.DB.Find(&goodsList)
+	database.DB.Where(where).Offset((page - 1) * pageSize).Limit(pageSize).Find(&goodsList)
 
-	// 分页
-	database.DB.Limit(pageSize).Offset((page - 1) * pageSize).Find(&goodsList)
-
-	// 获取总记录数
+	// 获取总数量
 	var count int64
-	database.DB.Table("goods").Count(&count)
+	database.DB.Where(where).Table("goods").Count(&count)
+
+	// 判断最后一页有没有数据，如果没有跳转到第一页
+	if len(goodsList) == 0 && page != 1 {
+		c.Redirect(302, "/admin/goods")
+		return
+	}
 
 	c.HTML(http.StatusOK, "admin/goods/index.html", gin.H{
 		"goodsList":  goodsList,
 		"totalPages": math.Ceil(float64(count) / float64(pageSize)),
 		"page":       page,
+		"keyword":    keyword,
 	})
 }
 
@@ -257,6 +273,7 @@ func (con GoodsController) Edit(c *gin.Context) {
 		"goodsTypeList":  goodsTypeList,
 		"goodsAttrStr":   goodsAttrStr,
 		"goodsImageList": goodsImageList,
+		"prevPage":       c.Request.Referer(), // 获取上一页的地址
 	})
 }
 
@@ -290,6 +307,7 @@ func (con GoodsController) DoEdit(c *gin.Context) {
 	goodsTypeId, _ := strconv.Atoi(c.PostForm("goods_type_id"))
 	sort, _ := strconv.Atoi(c.PostForm("sort"))
 	status, _ := strconv.Atoi(c.PostForm("status"))
+	prevPage := c.PostForm("prev_page") // 获取上一页的地址
 
 	// 2、获取颜色信息 把颜色转化成字符串
 	goodsColorStr := strings.Join(goodsColorArr, ",")
@@ -383,7 +401,11 @@ func (con GoodsController) DoEdit(c *gin.Context) {
 		wg.Done()
 	}()
 	wg.Wait()
-	con.success(c, "修改数据成功", "/admin/goods")
+	if len(prevPage) > 0 {
+		con.success(c, "修改数据成功", prevPage)
+	} else {
+		con.success(c, "修改数据成功", "/admin/goods")
+	}
 }
 
 // GoodsTypeAttribute 获取并返回商品类型属性
@@ -463,5 +485,22 @@ func (con GoodsController) RemoveGoodsImage(c *gin.Context) {
 }
 
 func (con GoodsController) Delete(c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		con.error(c, "参数错误", "/admin/goods")
+		return
+	}
 
+	goods := database.Goods{Id: id}
+	database.DB.Find(&goods)
+	goods.IsDelete = 1
+	goods.Status = 0
+	database.DB.Save(&goods)
+	// 获取上一页
+	prevPage := c.Request.Referer()
+	if len(prevPage) > 0 {
+		con.success(c, "删除数据成功", prevPage)
+	} else {
+		con.success(c, "删除数据成功", "/admin/goods")
+	}
 }
