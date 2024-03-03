@@ -99,5 +99,9 @@ func AdminRoutersInit(r *gin.Engine) {
 		adminRouters.GET("/nav/edit", admin.NavController{}.Edit)
 		adminRouters.POST("/nav/doEdit", admin.NavController{}.DoEdit)
 		adminRouters.GET("/nav/delete", admin.NavController{}.Delete)
+
+		// 系统设置管理
+		adminRouters.GET("/setting", admin.SettingController{}.Index)
+		adminRouters.POST("/setting/doEdit", admin.SettingController{}.DoEdit)
 	}
 }
