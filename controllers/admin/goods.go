@@ -13,8 +13,6 @@ import (
 	"mi_shop/util"
 )
 
-const pageSize = 5
-
 var wg sync.WaitGroup
 
 type GoodsController struct {
@@ -24,6 +22,8 @@ type GoodsController struct {
 func (con GoodsController) Index(c *gin.Context) {
 	// 当前页数
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	// 每页显示的数量
+	pageSize := 5
 	// 条件
 	where := "is_delete=0"
 

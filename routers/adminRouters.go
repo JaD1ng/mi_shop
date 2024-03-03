@@ -91,5 +91,13 @@ func AdminRoutersInit(r *gin.Engine) {
 		adminRouters.GET("/goods/delete", admin.GoodsController{}.Delete)
 		adminRouters.GET("/goods/goodsTypeAttribute", admin.GoodsController{}.GoodsTypeAttribute)
 		adminRouters.POST("/goods/imageUpload", admin.GoodsController{}.ImageUpload)
+
+		// 导航管理
+		adminRouters.GET("/nav", admin.NavController{}.Index)
+		adminRouters.GET("/nav/add", admin.NavController{}.Add)
+		adminRouters.POST("/nav/doAdd", admin.NavController{}.DoAdd)
+		adminRouters.GET("/nav/edit", admin.NavController{}.Edit)
+		adminRouters.POST("/nav/doEdit", admin.NavController{}.DoEdit)
+		adminRouters.GET("/nav/delete", admin.NavController{}.Delete)
 	}
 }
