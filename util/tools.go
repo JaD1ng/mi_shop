@@ -128,7 +128,8 @@ func GetSettingFromColumn(columnName string) string {
 // ResizeGoodsImage 生成商品缩略图
 func ResizeGoodsImage(filename string) {
 	extname := path.Ext(filename)
-	thumbnailSizeSlice := strings.Split(GetSettingFromColumn("ThumbnailSize"), ",")
+	thumbnailSize := strings.ReplaceAll(GetSettingFromColumn("ThumbnailSize"), "，", ",")
+	thumbnailSizeSlice := strings.Split(thumbnailSize, ",")
 
 	// static/upload/tao_400.png
 	// static/upload/tao_400.png_100x100.png
