@@ -17,6 +17,7 @@ func main() {
 	r.SetFuncMap(template.FuncMap{
 		"UnixToTime": util.UnixToTime,
 		"Str2Html":   util.Str2Html,
+		"Sub":        util.Sub,
 	})
 	// 加载模板 放在配置路由前面
 	r.LoadHTMLGlob("templates/**/**/*")
