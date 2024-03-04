@@ -108,8 +108,15 @@ func (con GoodsController) DoAdd(c *gin.Context) {
 	// 2、获取颜色信息 把颜色转化成字符串
 	goodsColorStr := strings.Join(goodsColorArr, ",")
 
-	// 3、上传图片   生成缩略图
+	// 3、上传图片,生成缩略图
 	goodsImg, _ := util.UploadImg(c, "goods_img")
+	if len(goodsImg) > 0 {
+		wg.Add(1)
+		go func() {
+			util.ResizeGoodsImage(goodsImg)
+			wg.Done()
+		}()
+	}
 
 	// 4、增加商品数据
 	goods := database.Goods{
@@ -343,6 +350,12 @@ func (con GoodsController) DoEdit(c *gin.Context) {
 	goodsImg, err := util.UploadImg(c, "goods_img")
 	if err == nil && len(goodsImg) > 0 {
 		goods.GoodsImg = goodsImg
+
+		wg.Add(1)
+		go func() {
+			util.ResizeGoodsImage(goodsImg)
+			wg.Done()
+		}()
 	}
 
 	err = database.DB.Save(&goods).Error
@@ -427,7 +440,7 @@ func (con GoodsController) GoodsTypeAttribute(c *gin.Context) {
 	})
 }
 
-// ImageUpload 图片上传
+// ImageUpload 富文本编辑器中上传图片
 func (con GoodsController) ImageUpload(c *gin.Context) {
 	imgDir, err := util.UploadImg(c, "file") // 注意：可以在网络里面看到传递的参数
 	if err != nil {
@@ -436,6 +449,13 @@ func (con GoodsController) ImageUpload(c *gin.Context) {
 		})
 		return
 	}
+
+	// 生成缩略图
+	wg.Add(1)
+	go func() {
+		util.ResizeGoodsImage(imgDir)
+		wg.Done()
+	}()
 	c.JSON(http.StatusOK, gin.H{
 		"link": "/" + imgDir,
 	})

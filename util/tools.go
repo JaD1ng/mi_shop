@@ -8,10 +8,14 @@ import (
 	"io"
 	"os"
 	"path"
+	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	img "github.com/hunterhug/go_image"
+	"mi_shop/database"
 )
 
 // UnixToTime 时间戳转换成日期
@@ -105,6 +109,35 @@ func Float(str string) (n float64, err error) {
 	return
 }
 
+// Str2Html 字符串转换成html
 func Str2Html(str string) template.HTML {
 	return template.HTML(str)
+}
+
+// GetSettingFromColumn 通过列获取设置
+func GetSettingFromColumn(columnName string) string {
+	// redis file
+	setting := database.Setting{}
+	database.DB.First(&setting)
+	// 反射来获取
+	v := reflect.ValueOf(setting)
+	val := v.FieldByName(columnName).String()
+	return val
+}
+
+// ResizeGoodsImage 生成商品缩略图
+func ResizeGoodsImage(filename string) {
+	extname := path.Ext(filename)
+	thumbnailSizeSlice := strings.Split(GetSettingFromColumn("ThumbnailSize"), ",")
+
+	// static/upload/tao_400.png
+	// static/upload/tao_400.png_100x100.png
+	for i := 0; i < len(thumbnailSizeSlice); i++ {
+		savePath := filename + "_" + thumbnailSizeSlice[i] + "x" + thumbnailSizeSlice[i] + extname
+		w, _ := strconv.Atoi(thumbnailSizeSlice[i])
+		err := img.ThumbnailF2F(filename, savePath, w, w)
+		if err != nil {
+			fmt.Println("生成图片失败", err)
+		}
+	}
 }
