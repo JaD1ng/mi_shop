@@ -146,3 +146,21 @@ func ResizeGoodsImage(filename string) {
 func Sub(a, b int) int {
 	return a - b
 }
+
+// Substr 截取字符串
+func Substr(str string, start, end int) string {
+	rs := []rune(str)
+	rl := len(rs)
+
+	if start < 0 || start > rl {
+		start = 0
+	}
+	if end < 0 || end > rl {
+		end = rl
+	}
+	if start > end {
+		start, end = end, start
+	}
+
+	return string(rs[start:end])
+}

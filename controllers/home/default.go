@@ -39,10 +39,17 @@ func (con DefaultController) Index(c *gin.Context) {
 		middleNavList[i].GoodsItems = goodsList
 	}
 
+	// 5、获取推荐商品
+	phoneList := database.GetGoodsByCategory(1, "best", 8)
+	// 获取其它配件
+	otherList := database.GetGoodsByCategory(9, "all", 1)
+
 	c.HTML(http.StatusOK, "home/index/index.html", gin.H{
 		"topNavList":    topNavList,
 		"focusList":     focusList,
 		"goodsCateList": goodsCateList,
 		"middleNavList": middleNavList,
+		"phoneList":     phoneList,
+		"otherList":     otherList,
 	})
 }
