@@ -6,9 +6,10 @@ import (
 	"github.com/mojocn/base64Captcha"
 )
 
-// var store = base64Captcha.DefaultMemStore
-// RedisStore实现了base64Captcha.Store接口
-var store base64Captcha.Store = RedisStore{}
+// // RedisStore实现了base64Captcha.Store接口
+// var store base64Captcha.Store = RedisStore{}
+
+var store = base64Captcha.DefaultMemStore
 
 // GetCaptcha 获取验证码
 func GetCaptcha() (id, b64s string, err error) {
