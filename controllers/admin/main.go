@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"mi_shop/database"
+	"mi_shop/util"
 )
 
 type MainController struct {
@@ -123,4 +124,9 @@ func (con MainController) ChangeNum(c *gin.Context) {
 		"success": true,
 		"message": "修改成功",
 	})
+}
+
+func (con MainController) FlushAll(c *gin.Context) {
+	util.CacheDb.FlushAll()
+	con.success(c, "清除redis缓存数据成功", "/admin")
 }

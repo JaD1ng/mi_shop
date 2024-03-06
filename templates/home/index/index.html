@@ -2,9 +2,9 @@
 
 {{ template "home/public/page_header.html" .}}
 
-<!-- start banner_x -->
+<!-- 中间导航start banner_x -->
 <div class="banner_x center">
-    <a href="./index.html" target="_blank">
+    <a href="/" target="_blank">
         <div class="logo fl"></div>
     </a>
     <a href="">
@@ -51,17 +51,30 @@
 
             {{range $key,$value := .goodsCateList}}
             <li>
-                <a href="#">{{$value.Title}}</a>
+
+
+                {{if eq $value.Link ""}}
+                <a href="category{{$value.Id}}" target="_blank">{{$value.Title}}</a>
+                {{else}}
+                <a href="{{$value.Link}}" target="_blank">{{$value.Title}}</a>
+                {{end}}
+
                 <div class="pop">
                     <ol class="cate_list clear">
                         {{range $k,$v := $value.GoodsCateItems}}
-
                         <li>
                             <div class="xuangou_left">
-                                <a href="#" class="clearfix">
+                                {{if eq $v.Link ""}}
+                                <a href="category{{$v.Id}}" target="_blank" class="clearfix">
                                     <div class="img fl"><img src="{{$v.CateImg}}" alt="{{$v.Title}}"></div>
                                     <span class="fl">{{$v.Title}}</span>
                                 </a>
+                                {{else}}
+                                <a href="{{$v.Link}}" target="_blank" class="clearfix">
+                                    <div class="img fl"><img src="{{$v.CateImg}}" alt="{{$v.Title}}"></div>
+                                    <span class="fl">{{$v.Title}}</span>
+                                </a>
+                                {{end}}
                             </div>
                         </li>
 
@@ -151,21 +164,18 @@
     </div>
 </div>
 
-
 <!-- 手机 -->
-
 <div class="category_item w">
     <div class="title center">手机</div>
     <div class="main center">
 
-
         <div class="category_item_left">
-
             <img src="/static/home/image/shouji.jpg" alt="手机">
         </div>
 
-
         <div class="category_item_right">
+
+
             {{range $key,$value := .phoneList}}
             <div class="hot fl">
                 <div class="xinpin"><span style="background:#fff"></span></div>
@@ -273,8 +283,7 @@
             </div>
             <div class="hotlast fr">
                 <div class="hongmi"><a href=""><img src="/static/home/image/hongmin4.png" alt=""></a></div>
-                <div class="liulangengduo"><a href=""><img src="/static/home/image/liulangengduo.png" alt=""></a>
-                </div>
+                <div class="liulangengduo"><a href=""><img src="/static/home/image/liulangengduo.png" alt=""></a></div>
             </div>
             <div class="clear"></div>
         </div>

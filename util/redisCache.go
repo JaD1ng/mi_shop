@@ -66,3 +66,10 @@ func (c cacheDb) Get(key string, obj any) bool {
 	}
 	return false
 }
+
+// FlushAll 清除缓存
+func (c cacheDb) FlushAll() {
+	if redisEnable {
+		rdbClient.FlushAll(ctx)
+	}
+}

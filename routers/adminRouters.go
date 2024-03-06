@@ -15,6 +15,7 @@ func AdminRoutersInit(r *gin.Engine) {
 		adminRouters.GET("/welcome", admin.MainController{}.Welcome)
 		adminRouters.GET("/changeStatus", admin.MainController{}.ChangeStatus)
 		adminRouters.GET("/changeNum", admin.MainController{}.ChangeNum)
+		adminRouters.GET("/flushAll", admin.MainController{}.FlushAll)
 
 		// 管理员登录
 		adminRouters.GET("/login", admin.LoginController{}.Index)

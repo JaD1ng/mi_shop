@@ -13,17 +13,17 @@
                 <a href="#">全部商品分类</a>
 
                 <div class="banner_y center">
-
+                    
                     <div class="nav">
                         <ul>
 
                             {{range $key,$value := .goodsCateList}}
                             <li>
-
+                                
                                 {{if eq $value.Link ""}}
-                                <a href="category{{$value.Id}}" target="_blank">{{$value.Title}}</a>
+                                <a href="category{{$value.Id}}">{{$value.Title}}</a>
                                 {{else}}
-                                <a href="{{$value.Link}}" target="_blank">{{$value.Title}}</a>
+                                <a href="{{$value.Link}}">{{$value.Title}}</a>
                                 {{end}}
 
                                 <div class="pop">
@@ -35,13 +35,13 @@
                                             <div class="xuangou_left">
                                                 {{if eq $v.Link ""}}
 
-                                                <a href="category{{$v.Id}}" target="_blank" class="clearfix">
+                                                <a href="category{{$v.Id}}" class="clearfix">
                                                     <div class="img fl"><img src="{{$v.CateImg}}"
                                                                              alt="{{$v.Title}}"></div>
                                                     <span class="fl">{{$v.Title}}</span>
                                                 </a>
                                                 {{else}}
-                                                <a href="{{$v.Link}}" target="_blank" class="clearfix">
+                                                <a href="{{$v.Link}}" class="clearfix">
                                                     <div class="img fl"><img src="{{$v.CateImg}}"
                                                                              alt="{{$v.Title}}"></div>
                                                     <span class="fl">{{$v.Title}}</span>
@@ -59,7 +59,7 @@
 
                         </ul>
                     </div>
-
+                    
                 </div>
             </li>
 
