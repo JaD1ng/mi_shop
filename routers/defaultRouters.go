@@ -9,5 +9,6 @@ func DefaultRoutersInit(r *gin.Engine) {
 	defaultRouters := r.Group("/")
 	{
 		defaultRouters.GET("/", home.DefaultController{}.Index)
+		defaultRouters.GET("/category:id", home.ProductController{}.Category)
 	}
 }
