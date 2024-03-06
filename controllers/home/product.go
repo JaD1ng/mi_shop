@@ -16,10 +16,7 @@ func (con ProductController) Category(c *gin.Context) {
 	// 分类id
 	cateId, _ := strconv.Atoi(c.Param("id"))
 	// 当前页
-	page, _ := strconv.Atoi(c.Query("page"))
-	if page == 0 {
-		page = 1
-	}
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	// 每一页显示的数量
 	pageSize := 5
 	// 获取当前分类
