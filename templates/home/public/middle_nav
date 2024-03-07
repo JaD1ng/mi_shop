@@ -13,13 +13,13 @@
                 <a href="#">全部商品分类</a>
 
                 <div class="banner_y center">
-                    
+
                     <div class="nav">
                         <ul>
 
                             {{range $key,$value := .goodsCateList}}
                             <li>
-                                
+
                                 {{if eq $value.Link ""}}
                                 <a href="category{{$value.Id}}">{{$value.Title}}</a>
                                 {{else}}
@@ -59,7 +59,7 @@
 
                         </ul>
                     </div>
-                    
+
                 </div>
             </li>
 
@@ -69,9 +69,10 @@
                 <ol class="children-list clearfix">
                     {{range $k,$v := $value.GoodsItems}}
                     <li>
-                        <a href="#">
+                        <a href="detail?id={{$v.Id}}">
                             <img src="{{$v.GoodsImg}}" alt="{{$v.Title}}"/>
-                            <p>{{$v.Price}}元</p>
+                            <p>{{$v.Title}}</p>
+                            <p class="price">{{$v.Price}}元</p>
                         </a>
                     </li>
                     {{end}}

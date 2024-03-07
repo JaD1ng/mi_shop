@@ -1,7 +1,6 @@
 package home
 
 import (
-	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -101,11 +100,6 @@ func (con ProductController) Detail(c *gin.Context) {
 	var goodsAttr []database.GoodsAttr
 	database.DB.Where("goods_id=?", goods.Id).Find(&goodsAttr)
 
-	// c.String(200, "Detail")
-	fmt.Println("111111")
-	fmt.Println(goods.GoodsColor)
-	fmt.Println(colorIds)
-
 	con.Render(c, "home/product/detail.html", gin.H{
 		"goods":         goods,
 		"relationGoods": relationGoods,
@@ -114,5 +108,33 @@ func (con ProductController) Detail(c *gin.Context) {
 		"goodsFitting":  goodsFitting,
 		"goodsImage":    goodsImage,
 		"goodsAttr":     goodsAttr,
+	})
+}
+
+func (con ProductController) GetImgList(c *gin.Context) {
+	goodsId, err1 := strconv.Atoi(c.Query("goods_id"))
+	colorId, err2 := strconv.Atoi(c.Query("color_id"))
+
+	// 查询商品图库信息
+	var goodsImageList []database.GoodsImage
+	err3 := database.DB.Where("goods_id=? AND color_id=?", goodsId, colorId).Find(&goodsImageList).Error
+
+	if err1 != nil || err2 != nil || err3 != nil {
+		c.JSON(200, gin.H{
+			"success": false,
+			"result":  "",
+			"message": "参数错误",
+		})
+		return
+	}
+
+	// 判断 goodsImageList的长度 如果goodsImageList没有数据，那么我们需要返回当前商品所有的图库信息
+	if len(goodsImageList) == 0 {
+		database.DB.Where("goods_id=?", goodsId).Find(&goodsImageList)
+	}
+	c.JSON(200, gin.H{
+		"success": true,
+		"result":  goodsImageList,
+		"message": "获取数据成功",
 	})
 }
