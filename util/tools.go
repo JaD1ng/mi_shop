@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gomarkdown/markdown"
 	img "github.com/hunterhug/go_image"
 	"mi_shop/database"
 )
@@ -163,4 +164,15 @@ func Substr(str string, start, end int) string {
 	}
 
 	return string(rs[start:end])
+}
+
+// FormatAttr 将商品属性格式化成markdown
+func FormatAttr(str string) (result string) {
+	tempSlice := strings.Split(str, "\n")
+	for _, v := range tempSlice {
+		md := []byte(v)
+		output := markdown.ToHTML(md, nil, nil)
+		result += string(output)
+	}
+	return
 }

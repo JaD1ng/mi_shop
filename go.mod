@@ -5,10 +5,10 @@ go 1.22
 require (
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.9.1
+	github.com/gomarkdown/markdown v0.0.0-20231222211730-1d6d20845b47
 	github.com/hunterhug/go_image v1.0.1
 	github.com/mojocn/base64Captcha v1.3.6
 	github.com/redis/go-redis/v9 v9.5.1
-	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	gopkg.in/ini.v1 v1.67.0
 	gorm.io/driver/mysql v1.5.4
 	gorm.io/gorm v1.25.7
