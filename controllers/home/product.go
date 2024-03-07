@@ -54,9 +54,7 @@ func (con ProductController) Category(c *gin.Context) {
 }
 
 func (con ProductController) Detail(c *gin.Context) {
-
 	id, err := strconv.Atoi(c.Query("id"))
-
 	if err != nil {
 		c.Redirect(302, "/")
 		c.Abort()
@@ -74,7 +72,6 @@ func (con ProductController) Detail(c *gin.Context) {
 	database.DB.Where("id in ?", relationIds).Select("id,title,price,goods_version").Find(&relationGoods)
 
 	// 3、获取关联赠品 GoodsGift
-
 	var goodsGift []database.Goods
 	goods.GoodsGift = strings.ReplaceAll(goods.GoodsGift, "，", ",")
 	giftIds := strings.Split(goods.GoodsGift, ",")
