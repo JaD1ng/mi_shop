@@ -15,5 +15,11 @@ func DefaultRoutersInit(r *gin.Engine) {
 
 		defaultRouters.GET("/cart", home.CartController{}.Get)
 		defaultRouters.GET("/cart/addCart", home.CartController{}.AddCart)
+		defaultRouters.GET("/cart/successTip", home.CartController{}.AddCartSuccess)
+		defaultRouters.GET("/cart/decCart", home.CartController{}.DecCart)
+		defaultRouters.GET("/cart/incCart", home.CartController{}.IncCart)
+		defaultRouters.GET("/cart/changeOneCart", home.CartController{}.ChangeOneCart)
+		defaultRouters.GET("/cart/changeAllCart", home.CartController{}.ChangeAllCart)
+		defaultRouters.GET("/cart/delCart", home.CartController{}.DelCart)
 	}
 }

@@ -176,3 +176,7 @@ func FormatAttr(str string) (result string) {
 	}
 	return
 }
+
+func Mul(price float64, num int) float64 {
+	return price * float64(num)
+}
