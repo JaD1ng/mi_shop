@@ -49,7 +49,7 @@ func (con LoginController) DoLogin(c *gin.Context) {
 }
 
 func (con LoginController) Captcha(c *gin.Context) {
-	id, b64s, err := util.GetCaptcha()
+	id, b64s, err := util.MakeCaptcha(34, 100, 4)
 	if err != nil {
 		fmt.Println(err)
 	}

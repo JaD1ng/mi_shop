@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"math/rand"
 	"os"
 	"path"
 	"reflect"
@@ -57,6 +58,7 @@ func GetDay() string {
 	return time.Now().Format(template)
 }
 
+// Md5 md5加密
 func Md5(pwd string) string {
 	h := md5.New()
 	io.WriteString(h, pwd)
@@ -144,8 +146,14 @@ func ResizeGoodsImage(filename string) {
 	}
 }
 
+// Sub 减法
 func Sub(a, b int) int {
 	return a - b
+}
+
+// Mul 乘法
+func Mul(price float64, num int) float64 {
+	return price * float64(num)
 }
 
 // Substr 截取字符串
@@ -177,6 +185,11 @@ func FormatAttr(str string) (result string) {
 	return
 }
 
-func Mul(price float64, num int) float64 {
-	return price * float64(num)
+// GetRandomNum 生成随机数
+func GetRandomNum() (str string) {
+	for i := 0; i < 4; i++ {
+		current := rand.Intn(10)
+		str += strconv.Itoa(current)
+	}
+	return
 }

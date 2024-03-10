@@ -14,7 +14,7 @@ var Cookie = &ginCookie{}
 // Set 写入数据的方法
 func (cookie ginCookie) Set(c *gin.Context, key string, value interface{}) {
 	bytes, _ := json.Marshal(value)
-	c.SetCookie(key, string(bytes), 3600, "/", "localhost", false, true)
+	c.SetCookie(key, string(bytes), 3600*24*30, "/", c.Request.Host, false, true)
 }
 
 // Get 获取数据的方法

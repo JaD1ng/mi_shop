@@ -2,10 +2,12 @@ package database
 
 type User struct {
 	Id       int
-	Username string
-	Age      int
-	Email    string
+	Phone    string
+	Password string
 	AddTime  int
+	LastIp   string
+	Email    string
+	Status   int
 }
 
 // TableName 表示配置操作数据库的表名称
