@@ -22,7 +22,12 @@
             <br>
             <br>
             <div class="yzm">
-                <input type="text" id="identify_code" name="identify_code" placeholder="请输入验证码"/>
+
+                <input type="hidden" id="phone" name="phone" value="{{.phone}}">
+                <input type="hidden" id="sign" name="sign" value="{{.sign}}">
+                <input type="hidden" id="verifyCode" name="verifyCode" value="{{.verifyCode}}">
+
+                <input type="text" id="smsCode" name="smsCode" placeholder="请输入验证码"/>
                 <button id="sendCode">重新发送</button>
             </div>
             <div class="regist_submit">
@@ -51,12 +56,45 @@
                 }
 
                 Countdown();
+
                 $("#sendCode").click(function () {
+                    timer = 10;
                     Countdown();
-                    alert('重新发送');
+                    var phone = $("#phone").val()
+                    var verifyCode = $("#verifyCode").val()
+                    var captchaId = "resend"
+
+                    //重新请求接口发送短信
+                    $.get("/pass/sendCode", {
+                        "phone": phone,
+                        "verifyCode": verifyCode,
+                        "captchaId": captchaId
+                    }, function (response) {
+                        console.log(response)
+                    })
                 })
             })
 
+            //验证验证码		
+            $(function () {
+
+                $("#nextStep").click(function (e) {
+
+                    var sign = $('#sign').val();
+                    var smsCode = $('#smsCode').val();
+
+                    $.get('/pass/validateSmsCode', {sign: sign, smsCode: smsCode}, function (response) {
+                        console.log(response)
+                        if (response.success == true) {
+                            location.href = "/pass/registerStep3?sign=" + sign + "&smsCode=" + smsCode
+                        } else {
+                            $(".error").html("Error：" + response.message)
+                        }
+                    })
+
+                })
+
+            })
         </script>
 
     </div>

@@ -40,7 +40,29 @@ func (con PassController) RegisterStep1(c *gin.Context) {
 }
 
 func (con PassController) RegisterStep2(c *gin.Context) {
-	c.HTML(http.StatusOK, "home/pass/register_step2.html", gin.H{})
+	sign := c.Query("sign")
+	verifyCode := c.Query("verifyCode")
+
+	// 1、验证图形验证码是否正确
+	session := sessions.Default(c)
+	sessionVerifyCode := session.Get("verifyCode")
+	sessionVerifyCodeStr, ok := sessionVerifyCode.(string)
+	if !ok || verifyCode != sessionVerifyCodeStr {
+		c.Redirect(302, "/pass/registerStep1")
+	}
+
+	// 2、获取sign 判断sign是否合法
+	var userTemp []database.UserTemp
+	database.DB.Where("sign=?", sign).Find(&userTemp)
+	if len(userTemp) > 0 {
+		c.HTML(http.StatusOK, "home/pass/register_step2.html", gin.H{
+			"phone":      userTemp[0].Phone,
+			"verifyCode": verifyCode,
+			"sign":       sign,
+		})
+	} else {
+		c.Redirect(302, "/pass/registerStep1")
+	}
 }
 
 func (con PassController) RegisterStep3(c *gin.Context) {
@@ -52,13 +74,32 @@ func (con PassController) SendCode(c *gin.Context) {
 	verifyCode := c.Query("verifyCode")
 	captchaId := c.Query("captchaId")
 
-	// 1、验证图形验证码是否正确
-	if flag := util.VerifyCaptcha(captchaId, verifyCode); !flag {
-		c.JSON(http.StatusOK, gin.H{
-			"success": false,
-			"message": "验证码输入错误，请重试",
-		})
-		return
+	if captchaId == "resend" {
+		// 1、注册第二个页面发送验证码的时候需要验证图形验证码
+		sessionDefault := sessions.Default(c)
+		sessionVerifyCode := sessionDefault.Get("verifyCode")
+		sessionVerifyCodeStr, ok := sessionVerifyCode.(string)
+		if !ok || verifyCode != sessionVerifyCodeStr {
+			c.JSON(http.StatusOK, gin.H{
+				"success": false,
+				"message": "非法请求",
+			})
+			return
+		}
+	} else {
+		// 1、验证图形验证码是否正确 保存图形验证码
+		if flag := util.VerifyCaptcha(captchaId, verifyCode); !flag {
+			c.JSON(http.StatusOK, gin.H{
+				"success": false,
+				"message": "验证码输入错误，请重试",
+			})
+			return
+		}
+
+		// 保存图形验证码
+		sessionDefault := sessions.Default(c)
+		sessionDefault.Set("verifyCode", verifyCode)
+		sessionDefault.Save()
 	}
 
 	// 2、验证手机号格式是否正确
@@ -113,7 +154,7 @@ func (con PassController) SendCode(c *gin.Context) {
 		// 需要调用短信接口发送短信
 		fmt.Println(smsCode)
 
-		// 2、服务器保持验证码
+		// 2、服务器保存验证码
 		session := sessions.Default(c)
 		session.Set("smsCode", smsCode)
 		session.Save()
@@ -121,7 +162,8 @@ func (con PassController) SendCode(c *gin.Context) {
 		// 3、更新发送短信的次数
 		oneUserTemp := database.UserTemp{}
 		database.DB.Where("id=?", userTemp[0].Id).Find(&oneUserTemp)
-		oneUserTemp.SendCount = oneUserTemp.SendCount + 1
+		oneUserTemp.SendCount++
+		oneUserTemp.AddTime = int(util.GetUnix())
 		database.DB.Save(&oneUserTemp)
 
 		c.JSON(http.StatusOK, gin.H{
@@ -134,7 +176,7 @@ func (con PassController) SendCode(c *gin.Context) {
 		// 需要调用短信接口发送短信
 		fmt.Println(smsCode)
 
-		// 2、服务器保持验证码
+		// 2、服务器保存验证码
 		session := sessions.Default(c)
 		session.Set("smsCode", smsCode)
 		session.Save()
@@ -156,8 +198,48 @@ func (con PassController) SendCode(c *gin.Context) {
 			"sign":    sign,
 		})
 	}
+}
 
-	// c.JSON(200, gin.H{
-	// 	"SendCode": "SendCode",
-	// })
+// ValidateSmsCode 验证验证码
+func (con PassController) ValidateSmsCode(c *gin.Context) {
+	sign := c.Query("sign")
+	smsCode := c.Query("smsCode")
+	// 1、验证数据是否合法
+
+	var userTemp []database.UserTemp
+	database.DB.Where("sign=?", sign).Find(&userTemp)
+	if len(userTemp) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "非法请求",
+		})
+		return
+	}
+
+	// 2、验证短信验证码是否正确
+	sessionDefault := sessions.Default(c)
+	sessionSmsCode := sessionDefault.Get("smsCode")
+	sessionSmsCodeStr, ok := sessionSmsCode.(string)
+	if !ok || smsCode != sessionSmsCodeStr {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "短信验证码输入错误",
+		})
+		return
+	}
+
+	// 3、判断验证码有没有过期   15分
+	nowTime := util.GetUnix()
+	if (nowTime-int64(userTemp[0].AddTime))/1000/60 > 15 {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "短信验证码已过期",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "验证码输入正确",
+	})
 }

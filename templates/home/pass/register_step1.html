@@ -19,11 +19,11 @@
         <div class="logo">
             <img src="/static/home/image/logo_top.png" alt="nest小米">
         </div>
-        
+
         <div class="regist_top">
             <h2>注册小米账户</h2>
         </div>
-        
+
         <div class="regist_main center">
             <div class="error"></div>
             <input type="hidden" name="captchaId" id="captchaId">
@@ -39,7 +39,7 @@
                     立即注册
                 </button>
             </div>
-            
+
             <br>
             <br>
             <div class="privacy_box">
@@ -56,38 +56,6 @@
         </div>
     </div>
 </div>
-
-<script>
-    $(function () {
-        //发送验证码
-        $("#registerButton").click(function () {
-            //验证验证码是否正确
-            var phone = $('#phone').val();
-            var verifyCode = $('#verifyCode').val();
-            var captchaId = $("#captchaId").val();
-            $(".error").html("")
-
-            var reg = /^[\d]{11}$/;
-            if (!reg.test(phone)) {
-                $(".error").html("Error：手机号输入错误");
-                return false;
-            }
-            if (verifyCode.length < 2) {
-                $(".error").html("Error：图形验证码长度不合法")
-                return false;
-            }
-
-            $.get("/pass/sendCode", {
-                "phone": phone,
-                "verifyCode": verifyCode,
-                "captchaId": captchaId
-            }, function (response) {
-                console.log(response)
-            })
-
-        })
-    })
-</script>
 
 </body>
 </html>
