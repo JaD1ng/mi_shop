@@ -66,7 +66,70 @@ func (con PassController) RegisterStep2(c *gin.Context) {
 }
 
 func (con PassController) RegisterStep3(c *gin.Context) {
-	c.HTML(http.StatusOK, "home/pass/register_step3.html", gin.H{})
+	sign := c.Query("sign")
+	smsCode := c.Query("smsCode")
+
+	// 1、验证短信验证码是否正确
+	session := sessions.Default(c)
+	sessionSmsCode := session.Get("smsCode")
+	sessionSmsCodeStr, ok := sessionSmsCode.(string)
+	if !ok || smsCode != sessionSmsCodeStr {
+		c.Redirect(302, "/pass/registerStep1")
+	}
+
+	// 2、获取sign 判断sign是否合法
+	var userTemp []database.UserTemp
+	database.DB.Where("sign=?", sign).Find(&userTemp)
+	if len(userTemp) > 0 {
+		c.HTML(http.StatusOK, "home/pass/register_step3.html", gin.H{
+			"smsCode": smsCode,
+			"sign":    sign,
+		})
+	} else {
+		c.Redirect(302, "/pass/registerStep1")
+	}
+}
+
+func (con PassController) DoRegister(c *gin.Context) {
+	// 1、获取表单传过来的数据
+	sign := c.PostForm("sign")
+	smsCode := c.PostForm("smsCode")
+	password := c.PostForm("password")
+	rpassword := c.PostForm("rpassword")
+
+	// 2、验证smsCode是否合法
+	session := sessions.Default(c)
+	sessionSmsCode := session.Get("smsCode")
+	sessionSmsCodeStr, ok := sessionSmsCode.(string)
+	if !ok || smsCode != sessionSmsCodeStr {
+		c.Redirect(302, "/")
+		return
+	}
+
+	// 3、验证密码是否合法
+	if len(password) < 6 || password != rpassword {
+		c.Redirect(302, "/")
+		return
+	}
+
+	// 4、验证签名是否合法
+	var userTemp []database.UserTemp
+	database.DB.Where("sign=?", sign).Find(&userTemp)
+	if len(userTemp) > 0 {
+		// 4、完成注册
+		user := database.User{
+			Phone:    userTemp[0].Phone,
+			Password: util.Md5(password), // 密码要加密
+			LastIp:   userTemp[0].Ip,
+			AddTime:  int(util.GetUnix()),
+			Status:   1,
+		}
+		database.DB.Create(&user)
+
+		// 5、执行登录
+		util.Cookie.Set(c, "userinfo", user)
+	}
+	c.Redirect(302, "/")
 }
 
 func (con PassController) SendCode(c *gin.Context) {
@@ -152,7 +215,6 @@ func (con PassController) SendCode(c *gin.Context) {
 		}
 		// 1、生成短信验证码，发送验证码
 		// 需要调用短信接口发送短信
-		fmt.Println(smsCode)
 
 		// 2、服务器保存验证码
 		session := sessions.Default(c)
@@ -174,7 +236,6 @@ func (con PassController) SendCode(c *gin.Context) {
 	} else {
 		// 1、生成短信验证码，发送验证码
 		// 需要调用短信接口发送短信
-		fmt.Println(smsCode)
 
 		// 2、服务器保存验证码
 		session := sessions.Default(c)

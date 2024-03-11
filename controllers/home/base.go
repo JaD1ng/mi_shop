@@ -45,10 +45,15 @@ func (con BaseController) Render(c *gin.Context, tpl string, data map[string]any
 		util.CacheDb.Set("middleNavList", middleNavList, 60*60)
 	}
 
+	// 4、获取Cookie里面保存的用户信息
+	userinfo := database.User{}
+	util.Cookie.Get(c, "userinfo", &userinfo)
+
 	renderData := gin.H{
 		"topNavList":    topNavList,
 		"goodsCateList": goodsCateList,
 		"middleNavList": middleNavList,
+		"userinfo":      userinfo,
 	}
 
 	for key, v := range data {

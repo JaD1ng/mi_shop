@@ -21,6 +21,7 @@
             <p>验证码已通过短信发送至{{.phone}}，请输入完成验证。手机绑定是为保障用户的信息真实性和帐号安全性</p>
             <br>
             <br>
+            <div class="error"></div>
             <div class="yzm">
 
                 <input type="hidden" id="phone" name="phone" value="{{.phone}}">
@@ -79,7 +80,7 @@
             $(function () {
 
                 $("#nextStep").click(function (e) {
-
+                    $(".error").html()
                     var sign = $('#sign').val();
                     var smsCode = $('#smsCode').val();
 
@@ -91,9 +92,11 @@
                             $(".error").html("Error：" + response.message)
                         }
                     })
-
                 })
 
+                $("#returnButton").click(function () {
+                    location.href = "/pass/registerStep1"
+                })
             })
         </script>
 

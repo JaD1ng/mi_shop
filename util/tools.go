@@ -191,5 +191,6 @@ func GetRandomNum() (str string) {
 		current := rand.Intn(10)
 		str += strconv.Itoa(current)
 	}
+	fmt.Println(str)
 	return
 }
