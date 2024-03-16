@@ -30,9 +30,11 @@ func (con PassController) Captcha(c *gin.Context) {
 }
 
 func (con PassController) Login(c *gin.Context) {
-	// // 生成随机数
-	// fmt.Println(util.GetRandomNum())
-	c.HTML(http.StatusOK, "home/pass/login.html", gin.H{})
+	prevPage := c.Request.Referer()
+
+	c.HTML(http.StatusOK, "home/pass/login.html", gin.H{
+		"prevPage": prevPage,
+	})
 }
 
 func (con PassController) RegisterStep1(c *gin.Context) {

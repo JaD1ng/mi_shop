@@ -12,17 +12,25 @@ type ginCookie struct{}
 var Cookie = &ginCookie{}
 
 // Set 写入数据的方法
-func (cookie ginCookie) Set(c *gin.Context, key string, value interface{}) {
+func (cookie ginCookie) Set(c *gin.Context, key string, value any) {
 	bytes, _ := json.Marshal(value)
-	c.SetCookie(key, string(bytes), 3600*24*30, "/", c.Request.Host, false, true)
+	// des加密
+	desKey := []byte("DNJdnj78") // 注意：key必须是8位
+	encData, _ := DesEncrypt(bytes, desKey)
+	c.SetCookie(key, string(encData), 3600*24*30, "/", c.Request.Host, false, true)
 }
 
 // Get 获取数据的方法
-func (cookie ginCookie) Get(c *gin.Context, key string, obj interface{}) bool {
+func (cookie ginCookie) Get(c *gin.Context, key string, obj any) bool {
 	valueStr, err := c.Cookie(key)
 	if err == nil && valueStr != "" && valueStr != "[]" {
-		err = json.Unmarshal([]byte(valueStr), obj)
-		return err == nil
+		// des解密
+		desKey := []byte("DNJdnj78") // 注意：key必须是8位
+		decData, err := DesDecrypt([]byte(valueStr), desKey)
+		if err == nil {
+			err = json.Unmarshal([]byte(decData), obj)
+			return err == nil
+		}
 	}
 	return false
 }

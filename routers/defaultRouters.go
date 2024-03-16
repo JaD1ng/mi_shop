@@ -3,6 +3,7 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"mi_shop/controllers/home"
+	"mi_shop/middlewares"
 )
 
 func DefaultRoutersInit(r *gin.Engine) {
@@ -35,5 +36,8 @@ func DefaultRoutersInit(r *gin.Engine) {
 		defaultRouters.POST("/pass/doRegister", home.PassController{}.DoRegister)
 		defaultRouters.POST("/pass/doLogin", home.PassController{}.DoLogin)
 		defaultRouters.GET("/pass/loginOut", home.PassController{}.Logout)
+
+		// 判断用户权限
+		defaultRouters.GET("/buy/checkout", middlewares.InitUserAuthMiddleware, home.BuyController{}.Checkout)
 	}
 }
