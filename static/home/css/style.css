@@ -81,6 +81,11 @@ a {
     padding-right: 40px;
 }
 
+ul {
+    margin: 0px !important;
+    padding: 0px !important;
+}
+
 .h3 {
     font-size: 22px;
     font-weight: bold;
@@ -90,8 +95,6 @@ a {
     clear: both;
     content: "";
     display: block;
-
-
 }
 
 
@@ -100,7 +103,6 @@ header {
     width: 100%;
     height: 40px;
     background: #333;
-    overflow: hidden;
 }
 
 header .top {
@@ -143,6 +145,7 @@ header .top .right ul li a {
 
 header .top .right ul li a:hover {
     color: #fff;
+    text-decoration: none;
 }
 
 header .top .right .gouwuche a {
@@ -205,7 +208,7 @@ header .top .right .gouwuche:hover {
 header .top .right ul li.userinfo {
     position: relative;
     width: 100px;
-    height: 30px;
+    height: 40px;
 }
 
 

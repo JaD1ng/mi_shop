@@ -1,6 +1,7 @@
 package home
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -46,8 +47,28 @@ func (con BaseController) Render(c *gin.Context, tpl string, data map[string]any
 	}
 
 	// 4、获取Cookie里面保存的用户信息
-	userinfo := database.User{}
-	util.Cookie.Get(c, "userinfo", &userinfo)
+	user := database.User{}
+	util.Cookie.Get(c, "userinfo", &user)
+	var userinfo string
+	if len(user.Phone) == 11 {
+		userinfo = fmt.Sprintf(`<li class="userinfo">
+			<a href="#">%v</a>		
+
+			<i class="i"></i>
+			<ol>
+				<li><a href="#">个人中心</a></li>
+
+				<li><a href="#">喜欢</a></li>
+
+				<li><a href="/pass/loginOut">退出登录</a></li>
+			</ol>								
+		</li> `, user.Phone)
+	} else {
+		userinfo = fmt.Sprintf(`<li><a href="/pass/login" target="_blank">登录</a></li>
+		<li>|</li>
+		<li><a href="/pass/registerStep1" target="_blank" >注册</a></li>
+		<li>|</li>`)
+	}
 
 	renderData := gin.H{
 		"topNavList":    topNavList,

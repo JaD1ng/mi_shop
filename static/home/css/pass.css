@@ -91,6 +91,7 @@ input:focus {
     width: 1130px;
     height: 588px;
     background: url('../image/login_bg.jpg') no-repeat center center;
+    margin: 0 auto;
 }
 
 .login {

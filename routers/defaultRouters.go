@@ -33,5 +33,7 @@ func DefaultRoutersInit(r *gin.Engine) {
 		defaultRouters.GET("/pass/sendCode", home.PassController{}.SendCode)
 		defaultRouters.GET("/pass/validateSmsCode", home.PassController{}.ValidateSmsCode)
 		defaultRouters.POST("/pass/doRegister", home.PassController{}.DoRegister)
+		defaultRouters.POST("/pass/doLogin", home.PassController{}.DoLogin)
+		defaultRouters.GET("/pass/loginOut", home.PassController{}.Logout)
 	}
 }
