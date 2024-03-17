@@ -57,7 +57,7 @@
 
     <div class="section section-goods">
         <div class="section-header clearfix">
-            <h3 class="title">商品</h3>
+            <h3 class="title">商品及优惠券</h3>
             <div class="more">
                 <a href="/cart" data-stat-id="4b8666e26639b521">返回购物车<i class="iconfont">></i></a>
             </div>
@@ -100,7 +100,7 @@
             <ul class="J_optionList options ">
                 <li data-type="pay" class="J_option selected" data-value="1">
                     在线支付 <span>
-								（支持微信支付、支付宝、银联、财付通、小米钱包等）                            </span>
+						（支持微信支付、支付宝、银联、财付通、小米钱包等） </span>
                 </li>
             </ul>
         </div>
@@ -187,13 +187,14 @@
     </div>
 </div>
 
+
 <!-- 收货地址增加 -->
 <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">增加收货地址</h4>
             </div>
             <div class="modal-body">
@@ -206,7 +207,7 @@
                 </div>
 
                 <div class="form-group">
-                    <textarea name="address" id="add_address" class="form-control" cols="78" rows="4"
+					<textarea name="address" id="add_address" class="form-control" cols="78" rows="4"
                               placeholder="详细地址"></textarea>
                 </div>
 
@@ -215,6 +216,42 @@
             <div class="modal-footer">
 
                 <button type="button" class="btn btn-primary" id="addAddress">增加</button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 收货地址修改 -->
+<div class="modal fade" id="editAddressModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">修改收货地址</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="hidden" name="id" id="edit_id"/>
+                    <input type="text" name="name" id="edit_name" class="form-control" placeholder="姓名">
+
+                </div>
+                <div class="form-group">
+                    <input type="text" name="phone" id="edit_phone" class="form-control" placeholder="电话">
+                </div>
+
+                <div class="form-group">
+					<textarea name="address" id="edit_address" class="form-control" cols="78" rows="4"
+                              placeholder="详细地址"></textarea>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-primary" id="editAddress">修改</button>
 
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
             </div>
