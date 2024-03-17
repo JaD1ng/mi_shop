@@ -131,10 +131,23 @@ func (con AddressController) EditAddress(c *gin.Context) {
 
 // ChangeDefaultAddress 修改默认的收货地址
 func (con AddressController) ChangeDefaultAddress(c *gin.Context) {
-	/*
-	   1、获取当前用户收货地址id 以及用户id
-	   2、更新当前用户的所有收货地址的默认收货地址状态为0
-	   3、更新当前收货地址的默认收货地址状态为1
-	*/
-	c.String(200, " 修改默认的收货地址")
+	user := database.User{}
+	util.Cookie.Get(c, "userinfo", &user)
+	addressId, err := strconv.Atoi(c.Query("addressId"))
+	if err != nil {
+		c.JSON(200, gin.H{
+			"success": false,
+			"message": "传入参数错误",
+		})
+		return
+	}
+
+	database.DB.Table("address").Where("uid = ?", user.Id).Updates(map[string]any{"default_address": 0})
+
+	database.DB.Table("address").Where("uid = ? AND id = ?", user.Id, addressId).Updates(map[string]any{"default_address": 1})
+
+	c.JSON(200, gin.H{
+		"success": true,
+		"message": "修改数据成功",
+	})
 }

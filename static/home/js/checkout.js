@@ -59,20 +59,26 @@
                         alert(response.message)
                     }
 
-
                     $('#addAddressModal').modal('hide')
                 });
 
             })
         }, changeDefaultAddress: function () {
+            //注意：事件委托   动态生成的dom节点默认没法直接绑定事件，这时候可以使用事件委托
+            $("#addressList").on("click", ".J_addressItem", function () {
+                $(this).addClass("selected").siblings().removeClass("selected");
 
-        }, editAddress: function () {
-            $(".addressModify").click(function () {
-
-                //请求接口获取当前收货地址id对应的数据
-                var addressId = $(this).parent().attr("data-id")
-                $.get("/address/getOneAddressList", {"addressId": addressId}, function (response) {
+                var addressId = $(this).attr("data-id");
+                $.get("/address/changeDefaultAddress", {"addressId": addressId}, function (response) {
                     console.log(response)
+                })
+            })
+        }, editAddress: function () {
+            //注意：事件委托
+            $("#addressList").on("click", ".addressModify", function () {
+                //请求接口获取当前收货地址id对应的数据
+                var addressId = $(this).attr("data-id")
+                $.get("/address/getOneAddressList", {"addressId": addressId}, function (response) {
                     if (response.success) {
                         var addressInfo = response.result;
                         $("#edit_id").val(addressInfo.id);
@@ -84,7 +90,6 @@
                     }
                     $('#editAddressModal').modal('show')
                 })
-
             })
 
             $("#editAddress").click(function () {
