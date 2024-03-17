@@ -37,8 +37,10 @@ func DefaultRoutersInit(r *gin.Engine) {
 		defaultRouters.POST("/pass/doLogin", home.PassController{}.DoLogin)
 		defaultRouters.GET("/pass/loginOut", home.PassController{}.Logout)
 
-		// 结算
+		// 购买管理
 		defaultRouters.GET("/buy/checkout", middlewares.InitUserAuthMiddleware, home.BuyController{}.Checkout) // 判断用户权限
+		defaultRouters.POST("/buy/doCheckout", middlewares.InitUserAuthMiddleware, home.BuyController{}.DoCheckout)
+		defaultRouters.GET("/buy/pay", middlewares.InitUserAuthMiddleware, home.BuyController{}.Pay)
 
 		// 收货地址管理
 		defaultRouters.POST("/address/addAddress", middlewares.InitUserAuthMiddleware, home.AddressController{}.AddAddress)

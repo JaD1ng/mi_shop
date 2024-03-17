@@ -194,3 +194,10 @@ func GetRandomNum() (str string) {
 	fmt.Println(str)
 	return
 }
+
+// GetOrderId 获取订单号
+func GetOrderId() string {
+	// 2022020312233
+	template := "20060102150405"
+	return time.Now().Format(template) + GetRandomNum()
+}

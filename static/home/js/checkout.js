@@ -5,7 +5,18 @@
             this.changeDefaultAddress();
             this.editAddress();
 
-        }, addAddress: function () {
+        }, // onSubmit:function(){
+        //     $("#checkoutForm").submit(function(){
+        // 		//判断收货地址是否选中
+        //         var addressCount=$("#addressList .address-item.selected").length;
+        //         if(addressCount>0){
+        //             return true;
+        //         }
+        //         alert('请选择收货地址');
+        //         return false;
+        //     })
+        // },
+        addAddress: function () {
             $("#addAddress").click(function () {
                 var name = $('#add_name').val();
                 var phone = $('#add_phone').val();
@@ -66,11 +77,15 @@
         }, changeDefaultAddress: function () {
             //注意：事件委托   动态生成的dom节点默认没法直接绑定事件，这时候可以使用事件委托
             $("#addressList").on("click", ".J_addressItem", function () {
-                $(this).addClass("selected").siblings().removeClass("selected");
-
+                var _that = this;
                 var addressId = $(this).attr("data-id");
                 $.get("/address/changeDefaultAddress", {"addressId": addressId}, function (response) {
                     console.log(response)
+                    if (response.success == true) {
+                        $(_that).addClass("selected").siblings().removeClass("selected");
+                    } else {
+                        alert("选择默认收货地址失败 请刷新重试")
+                    }
                 })
             })
         }, editAddress: function () {
