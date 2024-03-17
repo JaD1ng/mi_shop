@@ -185,7 +185,7 @@ func FormatAttr(str string) (result string) {
 	return
 }
 
-// GetRandomNum 生成随机数
+// GetRandomNum 生成4位随机数
 func GetRandomNum() (str string) {
 	for i := 0; i < 4; i++ {
 		current := rand.Intn(10)

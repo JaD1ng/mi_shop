@@ -15,7 +15,8 @@
     <div class="wdgwc fl ml40">确认订单</div>
 </div>
 
-<form action="/buy/doCheckout" method="post">
+<form action="/buy/doCheckout" method="post" id="checkoutForm">
+    <input type="hidden" name="orderSign" value="{{.orderSign}}">
     <div class="checkout-box">
         <div class="section section-address">
             <div class="section-header clearfix">

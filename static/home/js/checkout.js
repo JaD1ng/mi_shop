@@ -4,19 +4,18 @@
             this.addAddress();
             this.changeDefaultAddress();
             this.editAddress();
-
-        }, // onSubmit:function(){
-        //     $("#checkoutForm").submit(function(){
-        // 		//判断收货地址是否选中
-        //         var addressCount=$("#addressList .address-item.selected").length;
-        //         if(addressCount>0){
-        //             return true;
-        //         }
-        //         alert('请选择收货地址');
-        //         return false;
-        //     })
-        // },
-        addAddress: function () {
+            this.onSubmit();
+        }, onSubmit: function () {
+            $("#checkoutForm").submit(function () {
+                //判断收货地址是否选中
+                var addressCount = $("#addressList .address-item.selected").length;
+                if (addressCount > 0) {
+                    return true;
+                }
+                alert('请选择收货地址');
+                return false;
+            })
+        }, addAddress: function () {
             $("#addAddress").click(function () {
                 var name = $('#add_name').val();
                 var phone = $('#add_phone').val();

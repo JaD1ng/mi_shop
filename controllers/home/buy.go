@@ -1,6 +1,9 @@
 package home
 
 import (
+	"strconv"
+
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"mi_shop/database"
 	"mi_shop/util"
@@ -32,21 +35,55 @@ func (con BuyController) Checkout(c *gin.Context) {
 	var addressList []database.Address
 	database.DB.Where("uid = ?", user.Id).Order("id desc").Find(&addressList)
 
+	// 3、生成签名
+	orderSign := util.Md5(util.GetRandomNum())
+	session := sessions.Default(c)
+	session.Set("orderSign", orderSign)
+	session.Save()
+
+	// 4、判断orderList数据是否存在
+	if len(orderList) == 0 {
+		c.Redirect(302, "/")
+		return
+	}
+
 	con.Render(c, "home/buy/checkout.html", gin.H{
 		"orderList":   orderList,
 		"allPrice":    allPrice,
 		"allNum":      allNum,
 		"addressList": addressList,
+		"orderSign":   orderSign,
 	})
 }
 
 func (con BuyController) DoCheckout(c *gin.Context) {
+	// 0、防止重复提交订单
+	orderSignClient := c.PostForm("orderSign")
+	session := sessions.Default(c)
+	orderSignSession := session.Get("orderSign")
+	orderSignServer, ok := orderSignSession.(string)
+	if !ok {
+		c.Redirect(302, "/")
+		return
+	}
+
+	if orderSignClient != orderSignServer {
+		c.Redirect(302, "/")
+		return
+	}
+	session.Delete("orderSign")
+	session.Save()
+
 	// 1、获取用户信息 获取用户的收货地址信息
 	user := database.User{}
 	util.Cookie.Get(c, "userinfo", &user)
 
-	addressResult := database.Address{}
+	var addressResult []database.Address
 	database.DB.Where("uid = ? AND default_address=1", user.Id).Find(&addressResult)
+	if len(addressResult) == 0 {
+		c.Redirect(302, "/buy/checkout")
+		return
+	}
 
 	// 2、获取购买商品的信息
 	var cartList []database.Cart
@@ -65,9 +102,9 @@ func (con BuyController) DoCheckout(c *gin.Context) {
 		OrderId:     util.GetOrderId(),
 		Uid:         user.Id,
 		AllPrice:    allPrice,
-		Phone:       addressResult.Phone,
-		Name:        addressResult.Name,
-		Address:     addressResult.Address,
+		Phone:       addressResult[0].Phone,
+		Name:        addressResult[0].Name,
+		Address:     addressResult[0].Address,
 		PayStatus:   0,
 		PayType:     0,
 		OrderStatus: 0,
@@ -103,10 +140,32 @@ func (con BuyController) DoCheckout(c *gin.Context) {
 	}
 	util.Cookie.Set(c, "cartList", noSelectCartList)
 
-	c.Redirect(302, "/buy/pay")
+	c.Redirect(302, "/buy/pay?orderId="+strconv.Itoa(order.Id))
 }
 
 // Pay 支付
 func (con BuyController) Pay(c *gin.Context) {
-	c.String(200, "支付页面")
+	orderId, err := strconv.Atoi(c.Query("orderId"))
+	if err != nil {
+		c.Redirect(302, "/")
+	}
+	// 获取用户信息
+	user := database.User{}
+	util.Cookie.Get(c, "userinfo", &user)
+	// 获取订单信息
+	order := database.Order{}
+	database.DB.Where("id = ?", orderId).Find(&order)
+	if order.Uid != user.Id {
+		c.Redirect(302, "/")
+		return
+	}
+
+	// 获取订单对应的商品
+	var orderItems []database.OrderItem
+	database.DB.Where("order_id = ?", orderId).Find(&orderItems)
+
+	con.Render(c, "home/buy/pay.html", gin.H{
+		"order":      order,
+		"orderItems": orderItems,
+	})
 }
