@@ -5,14 +5,24 @@
             this.deleteConfirm();
             this.initCheckBox();
             this.isCheckedAll();
-        },
-        deleteConfirm: function () {
+            this.initChekOut();
+        }, deleteConfirm: function () {
             $('.delete').click(function () {
                 var flag = confirm('您确定要删除吗?');
                 return flag;
             })
-        },
-        initCheckBox() {
+        }, initChekOut() {
+            $(function () {
+                $("#checkout").click(function () {
+                    var allPrice = parseFloat($("#allPrice").html());
+                    if (allPrice == 0) {
+                        alert('购物车没有选中去结算的商品')
+                    } else {
+                        location.href = "/buy/checkout";
+                    }
+                })
+            })
+        }, initCheckBox() {
             //全选按钮点击
             $("#checkAll").click(function () {
                 if (this.checked) {
@@ -49,8 +59,7 @@
 
 
             });   //注意：this指向
-        },
-        //判断全选是否选择
+        }, //判断全选是否选择
         isCheckedAll() {
             var allNum = $(".cart_list :checkbox").size();//checkbox总个数
             var checkedNum = 0;
@@ -65,8 +74,7 @@
             } else {//不全选
                 $("#checkAll").prop("checked", false);
             }
-        },
-        changeCartNum() {
+        }, changeCartNum() {
             $('.decCart').click(function () {
                 var goods_id = $(this).attr("goods_id")
                 var goods_color = $(this).attr("goods_color")
